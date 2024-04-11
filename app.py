@@ -1,217 +1,206 @@
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, Toplevel
 from PyPDF2 import PdfMerger
 import os
 import json
 
-num_files = 0
+from sorting import SortKeyDialog
 
-def clear_files():
-    # Clear the tree
-    for item in tree.get_children():
-        tree.delete(item)
-    # Clear the set of items
-    tree_items.clear()
-    update_num_files()
+class PDFBuilder:
+    def __init__(self, root):
+        self.root = root
+        self.root.title('PDF Builder')
+        self.root.geometry("1200x600")
+        self.root.iconbitmap('pdficon.ico')
 
-def add_files():
-    files = filedialog.askopenfilenames(filetypes=[("PDF files", "*.pdf")])
-    if files:
-        pdf_files = [f for f in files if f.lower().endswith('.pdf')]
-        for file in pdf_files:
-            values = (os.path.basename(file), file)
-            add_item_to_tree(values)
-    update_num_files()
+        self.tree_items = set()
+        self.num_files = 0
 
-# Create a function to remove selected items
-def remove_selected():
-    selected_items = tree.selection()
-    for item in selected_items:
-        tree_items.remove(tree.item(item)['values'][1])
-        tree.delete(item)
-    update_num_files()
+        self.create_toolbar()
+        self.create_treeview()
+        self.create_scrollbar()
+        self.create_bottom_buttons()
+        self.create_status_bar()
 
-def add_directory():
-    directory = filedialog.askdirectory()
-    if directory:
-        pdf_files = [f for f in os.listdir(directory) if f.lower().endswith('.pdf')]
-        for file in pdf_files:
-            values = (os.path.basename(file), os.path.join(directory, file))
-            add_item_to_tree(values)
-    update_num_files()
+    def create_toolbar(self):
+        self.toolbar_frame = tk.Frame(self.root)
+        self.toolbar_frame.pack(fill=tk.X)
 
-def update_num_files():
-    items = tree.get_children('')
-    num_files = len(items)
-    status_bar.config(text=f'Total Files: {num_files}')
+        toolbar_buttons = [
+            ('Clear', self.clear_files),
+            ('Remove Selected', self.remove_selected),
+            ('Load', self.load_state),
+            ('Save', self.save_state),
+            ('Add Files', self.add_files),
+            ('Add Directory', self.add_directory),
+            ('Sort Key', self.sort_key),
+            ('Settings', self.open_settings)
+        ]
 
-def sort_key():
-    pass  # Add functionality here
+        for button_text, command in toolbar_buttons:
+            button = tk.Button(self.toolbar_frame, text=button_text, command=command)
+            button.pack(side=tk.LEFT, padx=2, pady=2)
 
-def open_settings():
-    pass  # Add functionality here
+    def create_treeview(self):
+        self.tree = ttk.Treeview(self.root, columns=('File Name', 'Path'), show='headings')
+        self.tree.heading('File Name', text='File Name')
+        self.tree.heading('Path', text='Path')
+        self.tree.column('File Name', width=200)
+        self.tree.column('Path', width=200)
+        self.tree.bind('<Double-1>', self.open_file)
+        self.tree.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
 
-def save_state():
-    # Get all items in the tree
-    items = tree.get_children()
+    def create_scrollbar(self):
+        self.scrollbar = ttk.Scrollbar(self.root, orient=tk.VERTICAL, command=self.tree.yview)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.tree.configure(yscroll=self.scrollbar.set)
 
-    # Get the file paths of the items
-    file_paths = [tree.item(item)['values'][1] for item in items]
+    def create_bottom_buttons(self):
+        bottom_buttons = [
+            ('Build PDF', self.build_pdf),
+            ('Auto Sort', self.auto_sort),
+            ('Move File ↓', self.move_file_down),
+            ('Move File ↑', self.move_file_up)
+        ]
 
-    output_path = filedialog.asksaveasfilename(defaultextension=".json")
+        for button_text, command in bottom_buttons:
+            button = tk.Button(self.root, text=button_text, command=command)
+            button.pack(side=tk.BOTTOM, fill=tk.X)
 
-    # Write the file paths to a JSON file
-    with open(output_path, 'w') as f:
-        json.dump(file_paths, f)
+    def create_status_bar(self):
+        self.status_bar = tk.Label(self.root, text=f'Total Files: {self.num_files}', bd=1, relief=tk.SUNKEN, anchor=tk.W)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
-def load_state():
-    # Clear the tree
-    tree.delete(*tree.get_children())
+    def clear_files(self):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        self.tree_items.clear()
+        self.update_num_files()
 
-    input_path = filedialog.askopenfilename(filetypes=[("PDF Builder Saves", "*.json")])
+    def add_files(self):
+        files = filedialog.askopenfilenames(filetypes=[("PDF files", "*.pdf")])
+        if files:
+            pdf_files = [f for f in files if f.lower().endswith('.pdf')]
+            for file in pdf_files:
+                normalized_file = os.path.normpath(file)
+                values = (os.path.basename(normalized_file), normalized_file)
+                self.add_item_to_tree(values)
+        self.update_num_files()
 
-    # Read the file paths from the JSON file
-    with open(input_path, 'r') as f:
-        file_paths = json.load(f)
+    def remove_selected(self):
+        selected_items = self.tree.selection()
+        for item in selected_items:
+            self.tree_items.remove(self.tree.item(item)['values'][1])
+            self.tree.delete(item)
+        self.update_num_files()
 
-    does_not_exist = []
+    def add_directory(self):
+        directory = filedialog.askdirectory()
+        if directory:
+            pdf_files = [f for f in os.listdir(directory) if f.lower().endswith('.pdf')]
+            for file in pdf_files:
+                full_path = os.path.join(directory, file)
+                normalized_path = os.path.normpath(full_path)
+                values = (os.path.basename(normalized_path), normalized_path)
+                self.add_item_to_tree(values)
+        self.update_num_files()
 
-    # Add the items to the tree
-    for file_path in file_paths:
-        values = (os.path.basename(file_path), file_path)
-        try:
-            add_item_to_tree(values, check_if_exists=True)
-        except FileNotFoundError as e:
-            does_not_exist.append(file_path)
+    def update_num_files(self):
+        items = self.tree.get_children('')
+        self.num_files = len(items)
+        self.status_bar.config(text=f'Total Files: {self.num_files}')
 
-    if does_not_exist:
-        paths_text = '\n'.join(does_not_exist)
-        messagebox.showwarning('Warning', f'The following files do not exist:\n{paths_text}')
+    def sort_key(self):
+        pass
 
-def build_pdf():
-    # Ask the user where they want to save the combined PDF
-    output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
+    def open_settings(self):
+        new_window = Toplevel(None)
+        new_window.title("Settings")
+        # save button
+        save_button = tk.Button(new_window, text="Save")
+        save_button.pack(side=tk.BOTTOM)
 
-    if output_path:
-        # Create a PdfMerger object
-        merger = PdfMerger()
+    def save_state(self):
+        items = self.tree.get_children()
+        file_paths = [self.tree.item(item)['values'][1] for item in items]
+        output_path = filedialog.asksaveasfilename(defaultextension=".json")
 
-        # Get all items in the tree
-        items = tree.get_children()
+        with open(output_path, 'w') as f:
+            json.dump(file_paths, f)
 
-        # Loop through the items and merge the PDFs
-        for item in items:
-            file_path = tree.item(item)['values'][1]
-            merger.append(file_path)
+    def load_state(self):
+        input_path = filedialog.askopenfilename(filetypes=[("PDF Builder Saves", "*.json")])
 
-        # Write the merged PDF to the output file
-        merger.write(output_path)
-        merger.close()
+        with open(input_path, 'r') as f:
+            file_paths = json.load(f)
 
-        # Inform the user that the PDF has been built
-        messagebox.showinfo('PDF Builder', 'PDF has been built successfully.')
+        does_not_exist = []
 
-def auto_sort():
-    items = tree.get_children('')
-    sorted_items = sorted((tree.item(item)['values'], item) for item in items)
-    tree.delete(*items)
-    tree_items.clear()
-    for values, item in sorted_items:
-        add_item_to_tree(values)
+        self.clear_files()
+        for file_path in file_paths:
+            values = (os.path.basename(file_path), file_path)
+            try:
+                self.add_item_to_tree(values, check_if_exists=True)
+            except FileNotFoundError as e:
+                does_not_exist.append(file_path)
 
-def move_file_down():
-    selected_items = tree.selection()  # get selected items
-    for selected_item in reversed(selected_items):
-        item_index = tree.index(selected_item)  # get index of selected item
-        if item_index < len(tree.get_children()) - 1:  # if not the last item
-            tree.move(selected_item, '', item_index + 1)  # move item down
+        if does_not_exist:
+            paths_text = '\n'.join(does_not_exist)
+            messagebox.showwarning('Warning', f'The following files do not exist:\n{paths_text}')
 
-def move_file_up():
-    selected_items = tree.selection()  # get selected items
-    for selected_item in selected_items:
-        item_index = tree.index(selected_item)  # get index of selected item
-        if item_index > 0:  # if not the first item
-            tree.move(selected_item, '', item_index - 1)  # move item up
+    def build_pdf(self):
+        output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
+        if output_path:
+            merger = PdfMerger()
+            items = self.tree.get_children()
 
-def open_file(event):
-    item = tree.focus()
-    file_path = tree.item(item)['values'][1]
-    os.startfile(file_path)
+            for item in items:
+                file_path = self.tree.item(item)['values'][1]
+                merger.append(file_path)
 
-# Initialize the main window
-root = tk.Tk()
-root.title('PDF Builder')
-root.geometry("800x600")
-root.iconbitmap('pdficon.ico')
+            merger.write(output_path)
+            merger.close()
+            messagebox.showinfo('PDF Builder', 'PDF has been built successfully.')
 
-# Create the toolbar frame
-toolbar_frame = tk.Frame(root)
-toolbar_frame.pack(fill=tk.X)
+    def auto_sort(self):
+        items = self.tree.get_children('')
+        sorted_items = sorted((self.tree.item(item)['values'], item) for item in items)
+        self.tree.delete(*items)
+        self.tree_items.clear()
+        for values, item in sorted_items:
+            self.add_item_to_tree(values)
 
-# Add buttons to the toolbar
-toolbar_buttons = [
-    ('Clear', clear_files),
-    ('Remove Selected', remove_selected),
-    ('Load', load_state), 
-    ('Save', save_state),
-    ('Add Files', add_files),
-    ('Add Directory', add_directory),
-    ('Sort Key', sort_key),
-    ('Settings', open_settings)
-]
+    def move_file_down(self):
+        selected_items = self.tree.selection()
+        for selected_item in reversed(selected_items):
+            item_index = self.tree.index(selected_item)
+            if item_index < len(self.tree.get_children()) - 1:
+                self.tree.move(selected_item, '', item_index + 1)
 
-for button_text, command in toolbar_buttons:
-    button = tk.Button(toolbar_frame, text=button_text, command=command)
-    button.pack(side=tk.LEFT, padx=2, pady=2)
+    def move_file_up(self):
+        selected_items = self.tree.selection()
+        for selected_item in selected_items:
+            item_index = self.tree.index(selected_item)
+            if item_index > 0:
+                self.tree.move(selected_item, '', item_index - 1)
 
-# Create the file display area
-tree = ttk.Treeview(root, columns=('File Name', 'Path'), show='headings')
-tree.heading('File Name', text='File Name')
-tree.heading('Path', text='Path')
-tree.column('File Name', width=200)
-tree.column('Path', width=200)
+    def open_file(self, event):
+        item = self.tree.focus()
+        file_path = self.tree.item(item)['values'][1]
+        os.startfile(file_path)
 
-# Bind the double click event to the tree
-tree.bind('<Double-1>', open_file)
+    def add_item_to_tree(self, item, check_if_exists=False):
+        if check_if_exists and not os.path.exists(item[1]):
+            raise FileNotFoundError(f"The file '{item[1]}' does not exist.")
 
-# Create a set to store the items in the tree
-tree_items = set()
+        if item[1] not in self.tree_items:
+            self.tree.insert('', 'end', values=item)
+            self.tree_items.add(item[1])
 
-# Function to add items to the tree
-def add_item_to_tree(item, check_if_exists=False):
-    # Check if the file exists
-    if check_if_exists and not os.path.exists(item[1]):
-        raise FileNotFoundError(f"The file '{item[1]}' does not exist.")
+        self.update_num_files()
 
-    # Only add the item if it's not already in the set
-    if item[1] not in tree_items:
-        tree.insert('', 'end', values=item)
-        tree_items.add(item[1])
 
-    update_num_files()
-
-tree.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
-
-# Add scrollbar for the treeview
-scrollbar = ttk.Scrollbar(root, orient=tk.VERTICAL, command=tree.yview)
-scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-tree.configure(yscroll=scrollbar.set)
-
-# Add additional buttons at the bottom
-bottom_buttons = [
-    ('Build PDF', build_pdf),
-    ('Auto Sort', auto_sort),
-    ('Move File ↓', move_file_down),
-    ('Move File ↑', move_file_up)
-]
-
-for button_text, command in bottom_buttons:
-    button = tk.Button(root, text=button_text, command=command)
-    button.pack(side=tk.BOTTOM, fill=tk.X)
-
-# Status bar at the bottom
-status_bar = tk.Label(root, text=f'Total Files: {num_files}', bd=1, relief=tk.SUNKEN, anchor=tk.W)
-status_bar.pack(side=tk.BOTTOM, fill=tk.X)
-
-# Start the Tkinter event loop
-root.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = PDFBuilder(root)
+    root.mainloop()
