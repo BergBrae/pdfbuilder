@@ -1,20 +1,21 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, Toplevel
-from PyPDF2 import PdfMerger
 import os
 import json
 
 from sorting import SortKeyDialog
+from build import build_pdf
 
 class PDFBuilder:
     def __init__(self, root):
         self.root = root
         self.root.title('PDF Builder')
-        self.root.geometry("1200x600")
+        self.root.geometry("1000x600")
         self.root.iconbitmap('pdficon.ico')
 
         self.tree_items = set()
         self.num_files = 0
+        self.sorter = SortKeyDialog(self.root)
 
         self.create_toolbar()
         self.create_treeview()
@@ -151,23 +152,19 @@ class PDFBuilder:
     def build_pdf(self):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         if output_path:
-            merger = PdfMerger()
-            items = self.tree.get_children()
-
-            for item in items:
-                file_path = self.tree.item(item)['values'][1]
-                merger.append(file_path)
-
-            merger.write(output_path)
-            merger.close()
-            messagebox.showinfo('PDF Builder', 'PDF has been built successfully.')
+                items = self.tree.get_children()
+                paths = [self.tree.item(item)['values'][1] for item in items]
+                build_pdf(paths, output_path)
+                messagebox.showinfo('PDF Builder', 'PDF has been built successfully.')
 
     def auto_sort(self):
         items = self.tree.get_children('')
-        sorted_items = sorted((self.tree.item(item)['values'], item) for item in items)
-        self.tree.delete(*items)
-        self.tree_items.clear()
-        for values, item in sorted_items:
+        values = [self.tree.item(item)['values'] for item in items]
+
+        sorted_items = self.sorter.sort(values)
+        
+        self.clear_files()
+        for values in sorted_items:
             self.add_item_to_tree(values)
 
     def move_file_down(self):
