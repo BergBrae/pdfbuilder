@@ -1,3 +1,4 @@
 .env
 state.json
 __pycache__/
+sort_key.txt
