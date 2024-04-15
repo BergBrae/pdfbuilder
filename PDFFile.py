@@ -38,6 +38,7 @@ class PDFFile:
                 return self._reader
             else:
                 return PdfReader(open(self.path, "rb"), strict=False)
+        return self._reader
 
     @property
     def num_pages(self):

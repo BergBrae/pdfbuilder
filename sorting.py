@@ -12,6 +12,12 @@ class SortKeyDialog:
         if os.path.exists("sort_key.txt"):
             with open("sort_key.txt", "r") as f:
                 self._sort_key = [line.rstrip() for line in f]
+        else:
+            # Show window that tells user to put a sort_key.txt file in the same directory
+            simpledialog.messagebox.showinfo(
+                "Sort Key",
+                "Please create a sort_key.txt file in the same directory as this script.",
+            )
 
     def open_dialog(self):
         self.dialog = Toplevel(self.parent)

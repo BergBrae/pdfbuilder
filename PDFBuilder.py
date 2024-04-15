@@ -15,7 +15,7 @@ class PDFBuilder:
         self.root = root
         self.root.title("PDF Builder")
         self.root.geometry("1000x600")
-        self.root.iconbitmap("pdficon.ico")
+        # self.root.iconbitmap("pdficon.ico")
 
         self.tree_items = set()
         self.num_files = 0
@@ -47,22 +47,14 @@ class PDFBuilder:
             button = tk.Button(self.toolbar_frame, text=button_text, command=command)
             button.pack(side=tk.LEFT, padx=2, pady=2)
 
-        # self.show_pages_var = tk.BooleanVar(value=True)
-        # self.show_pages_check = tk.Checkbutton(
-        #     self.toolbar_frame, text="Show # Pages", variable=self.show_pages_var
-        # )
-        # self.show_pages_check.pack(side=tk.LEFT, padx=2, pady=2)
-
     def create_treeview(self):
         self.tree = ttk.Treeview(
-            self.root, columns=("File Name", "Path"), show="headings"  # , "# Pages"
+            self.root, columns=("File Name", "Path"), show="headings"
         )
         self.tree.heading("File Name", text="File Name")
         self.tree.heading("Path", text="Path")
-        # self.tree.heading("# Pages", text="# Pages")
         self.tree.column("File Name", width=200)
         self.tree.column("Path", width=200)
-        # self.tree.column("# Pages", width=10)
         self.tree.bind("<Double-1>", self.open_file)
         self.tree.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
 
