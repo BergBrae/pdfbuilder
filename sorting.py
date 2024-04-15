@@ -29,7 +29,6 @@ class SortKeyDialog:
             for item in self.sort_key:
                 f.write("%s\n" % item)
         self.dialog.destroy()
-        self.load_sort_key()
 
     @property
     def sort_key(self):

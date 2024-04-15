@@ -6,105 +6,8 @@ from PyPDF2 import PdfMerger, PdfReader
 
 from sorting import SortKeyDialog
 from build import build_pdf
-
-
-class PDFFile:
-    def __init__(self, path: str, num_pages=None, open_file=True, check_exists=True):
-        if check_exists and not os.path.exists(path):
-            raise FileNotFoundError(f"The file '{path}' does not exist.")
-        self.path = os.path.normpath(path)
-        self.filename = os.path.basename(path)
-        if open_file:
-            self.reader = PdfReader(open(self.path, "rb"), strict=False)
-            self.num_pages = len(self.reader.pages)
-        else:
-            self.num_pages, self.reader = None, None
-
-    def __hash__(self):
-        return hash(self.path)
-
-    def __repr__(self) -> str:
-        return f"PDFFile({self.filename})"
-
-    def __eq__(self, other) -> bool:
-        return self.path == other.path
-
-    @property
-    def values(self):
-        return (self.filename, self.path, self.num_pages)
-
-
-class PDFCollection:
-    def __init__(self):
-        self.files = []
-        self.num_files = 0
-        self.total_pages = 0
-
-    def __len__(self):
-        return self.num_files
-
-    def __contains__(self, pdf: PDFFile):
-        return pdf in self.files
-
-    def add_file(self, pdf: PDFFile):
-        if pdf not in self:
-            self.files.append(pdf)
-            self.num_files += 1
-
-    def remove_file(self, pdf: PDFFile):
-        self.files.remove(pdf)
-        self.num_files -= 1
-
-    def remove_by_path(self, path: str):
-        for pdf in self.files:
-            if pdf.path == path:
-                self.files.remove(pdf)
-                self.num_files -= 1
-
-    def clear_files(self):
-        self.files.clear()
-        self.num_files = 0
-
-    def get_file_by_path(self, path: str):
-        for pdf in self.files:
-            if pdf.path == path:
-                return pdf
-
-    def sort(self, sort_key: list[str]):
-        sorted_files = []
-        for key in sort_key:
-            for pdf in self.files:
-                if key in pdf.filename:
-                    sorted_files.append(pdf)
-        not_matched = list(set(self.files) - set(sorted_files))
-        self.files = sorted_files + not_matched
-        return not_matched
-
-    def get_tkinter_table_data(self):
-        return [pdf.values for pdf in self.files]
-
-    def move_file_up(self, index):
-        if index > 0:
-            self.files[index], self.files[index - 1] = (
-                self.files[index - 1],
-                self.files[index],
-            )
-
-    def move_file_down(self, index):
-        if index < len(self.files) - 1:
-            self.files[index], self.files[index + 1] = (
-                self.files[index + 1],
-                self.files[index],
-            )
-
-    def build_pdf(self, output_path: str):
-        # filepaths is a list of tuples (filename, path)
-        merger = PdfMerger()
-        for pdf in self.files:
-            merger.append(pdf.path)
-
-        merger.write(output_path)
-        merger.close()
+from PDFFile import PDFFile
+from PDFCollection import PDFCollection
 
 
 class PDFBuilder:
@@ -144,22 +47,22 @@ class PDFBuilder:
             button = tk.Button(self.toolbar_frame, text=button_text, command=command)
             button.pack(side=tk.LEFT, padx=2, pady=2)
 
-        self.show_pages_var = tk.BooleanVar(value=True)
-        self.show_pages_check = tk.Checkbutton(
-            self.toolbar_frame, text="Show # Pages", variable=self.show_pages_var
-        )
-        self.show_pages_check.pack(side=tk.LEFT, padx=2, pady=2)
+        # self.show_pages_var = tk.BooleanVar(value=True)
+        # self.show_pages_check = tk.Checkbutton(
+        #     self.toolbar_frame, text="Show # Pages", variable=self.show_pages_var
+        # )
+        # self.show_pages_check.pack(side=tk.LEFT, padx=2, pady=2)
 
     def create_treeview(self):
         self.tree = ttk.Treeview(
-            self.root, columns=("File Name", "Path", "# Pages"), show="headings"
+            self.root, columns=("File Name", "Path"), show="headings"  # , "# Pages"
         )
         self.tree.heading("File Name", text="File Name")
         self.tree.heading("Path", text="Path")
-        self.tree.heading("# Pages", text="# Pages")
+        # self.tree.heading("# Pages", text="# Pages")
         self.tree.column("File Name", width=200)
         self.tree.column("Path", width=200)
-        self.tree.column("# Pages", width=10)
+        # self.tree.column("# Pages", width=10)
         self.tree.bind("<Double-1>", self.open_file)
         self.tree.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
 
@@ -201,9 +104,7 @@ class PDFBuilder:
         if files:
             pdf_files = [f for f in files if f.lower().endswith(".pdf")]
             for filepath in pdf_files:
-                self.pdfs.add_file(
-                    PDFFile(filepath, open_file=self.show_pages_var.get())
-                )
+                self.pdfs.add_file(PDFFile(filepath))
             self.update_tree()
 
     def remove_selected(self):
@@ -219,15 +120,14 @@ class PDFBuilder:
             pdf_files = [f for f in os.listdir(directory) if f.lower().endswith(".pdf")]
             for file in pdf_files:
                 full_path = os.path.join(directory, file)
-                self.pdfs.add_file(
-                    PDFFile(full_path, open_file=self.show_pages_var.get())
-                )
+                self.pdfs.add_file(PDFFile(full_path))
             self.update_tree()
 
     def sort_key(self):
         self.sort_dialog = SortKeyDialog(self.root)
         self.sort_dialog.open_dialog()
         self.root.wait_window(self.sort_dialog.dialog)
+        self.sorter._sort_key = self.sort_dialog.sort_key
 
     def open_settings(self):
         new_window = Toplevel(None)
@@ -282,6 +182,7 @@ class PDFBuilder:
         self.update_tree()
         num_not_matched = len(not_matched)
 
+        # Highlight and notify of files that did not match the sort key
         non_matched_ids = []
         for pdfs in not_matched:
             item_id = self.get_item_id_from_value(self.tree, 1, pdfs.path)
