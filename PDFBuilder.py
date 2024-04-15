@@ -27,6 +27,38 @@ class PDFBuilder:
         self.create_scrollbar()
         self.create_bottom_buttons()
         self.create_status_bar()
+        self.create_sort_key_visualization()
+
+    def create_sort_key_visualization(self):
+        # Create a frame to hold the sort key visualization
+        self.sort_key_frame = tk.Frame(self.root)
+
+        # Create a Label widget for the title
+        self.sort_key_label = tk.Label(self.sort_key_frame, text="Sort Key")
+        self.sort_key_label.pack()
+
+        # Create a Listbox widget
+        self.sort_key_listbox = tk.Listbox(self.sort_key_frame)
+
+        # Pack the Listbox widget
+        self.sort_key_listbox.pack(fill=tk.BOTH)
+
+        # Pack the frame on the right side of the window
+        self.sort_key_frame.pack(side=tk.RIGHT, fill=tk.BOTH)
+
+        # Call the update_sort_key_display method whenever you update the sort key
+        self.update_sort_key_display()
+
+    def update_sort_key_display(self):
+        # Clear the existing sort key display
+        self.sort_key_listbox.delete(0, tk.END)
+
+        # Get the current sort key
+        sort_key = self.sorter._sort_key
+
+        # Add each item in the sort key to the Listbox
+        for item in sort_key:
+            self.sort_key_listbox.insert(tk.END, item)
 
     def create_toolbar(self):
         self.toolbar_frame = tk.Frame(self.root)
@@ -120,6 +152,8 @@ class PDFBuilder:
         self.sort_dialog.open_dialog()
         self.root.wait_window(self.sort_dialog.dialog)
         self.sorter._sort_key = self.sort_dialog.sort_key
+
+        self.update_sort_key_display()
 
     def open_settings(self):
         new_window = Toplevel(None)
