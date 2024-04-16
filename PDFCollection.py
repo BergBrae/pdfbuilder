@@ -3,8 +3,10 @@ from tkinter import ttk, filedialog, messagebox, Toplevel
 import os
 import json
 from PyPDF2 import PdfMerger, PdfReader
+from io import BytesIO
 
 from PDFFile import PDFFile
+from add_page_numers import add_page_number
 
 
 class PDFCollection:
@@ -70,11 +72,22 @@ class PDFCollection:
                 self.files[index],
             )
 
-    def build_pdf(self, output_path: str):
-        # filepaths is a list of tuples (filename, path)
-        merger = PdfMerger()
+    def build_pdf(self, output_path: str, page_numbers=True, padding=20):
+        merger = PdfMerger()  # Can add bookmarks with PdfMerger
+        total_pages = 0
         for pdf in self.files:
-            merger.append(pdf.path)
+            with open(pdf.path, "rb") as f:
+                input_pdf_bytes = BytesIO(f.read())
 
-        merger.write(output_path)
+            if page_numbers:
+                output_pdf_bytes, num_pages = add_page_number(
+                    input_pdf_bytes, total_pages + 1, padding
+                )
+                merger.append(output_pdf_bytes)
+                total_pages += num_pages
+            else:
+                merger.append(input_pdf_bytes)
+
+        with open(output_path, "wb") as f:
+            merger.write(f)
         merger.close()
