@@ -49,7 +49,7 @@ class PDFCollection:
         sorted_files = []
         for key in sort_key:
             for pdf in self.files:
-                if key in pdf.filename and pdf not in sorted_files:
+                if key in pdf.filename_parts and pdf not in sorted_files:
                     sorted_files.append(pdf)
         not_matched = list(set(self.files) - set(sorted_files))
         self.files = sorted_files + not_matched

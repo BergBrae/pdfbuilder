@@ -30,7 +30,7 @@ class SortKeyDialog:
         self.text.insert("1.0", "\n".join(self.sort_key))
 
     def save(self):
-        self._sort_key = self.text.get("1.0", "end-1c").strip().split("\n")
+        self._sort_key = self.text.get("1.0", "end-1c").strip().upper().split("\n")
         with open("sort_key.txt", "w") as f:
             for item in self.sort_key:
                 f.write("%s\n" % item)
