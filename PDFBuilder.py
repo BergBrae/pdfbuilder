@@ -110,7 +110,11 @@ class PDFBuilder:
     def add_directory(self):
         directory = filedialog.askdirectory()
         if directory:
-            pdf_files = [f for f in os.listdir(directory) if f.lower().endswith(".pdf")]
+            pdf_files = []
+            for root, dirs, files in os.walk(directory):
+                for file in files:
+                    if file.lower().endswith(".pdf"):
+                        pdf_files.append(os.path.join(root, file))
             for file in pdf_files:
                 full_path = os.path.join(directory, file)
                 self.pdfs.add_file(PDFFile(full_path))
