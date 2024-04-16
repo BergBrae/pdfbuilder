@@ -2,6 +2,8 @@ import os
 from PyPDF2 import PdfReader
 import re
 
+from classify_pdf import classify_pdf
+
 
 class PDFFile:
     def __init__(self, path: str, keep_open=False, check_exists=True):
@@ -11,12 +13,18 @@ class PDFFile:
         self.filename = os.path.basename(path)
 
         filename_without_extension, _ = os.path.splitext(self.filename)
-        filename_parts = re.split(r"[\s_.-]+", filename_without_extension)
-        self.filename_parts = [part.upper() for part in filename_parts]
+        filename_parts: list[str] = re.split(r"[\s_.-]+", filename_without_extension)
+        self.filename_parts: list[str] = [part.upper() for part in filename_parts]
 
         self._reader = None
         self._num_pages = None
         self.keep_open = keep_open
+
+        self.text: list[str] = None
+        self.extract_text()
+
+        self.classification: list[str] = None
+        self.classify()
 
     def __hash__(self):
         return hash(self.path)
@@ -47,3 +55,11 @@ class PDFFile:
             self._num_pages = len(self.reader.pages)
 
         return self._num_pages
+
+    def extract_text(self) -> list[str]:
+        self.text = []
+        for page in self.reader.pages:
+            self.text.append(page.extract_text())
+
+    def classify(self):
+        self.classification = classify_pdf(self.text, self.filename_parts)

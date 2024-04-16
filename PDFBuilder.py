@@ -173,6 +173,7 @@ class PDFBuilder:
         add_page_numbers_check = tk.Checkbutton(
             new_window, text="Add Page Numbers", variable=add_page_numbers_var
         )
+        add_page_numbers_check.select()  # Set default to checked
         add_page_numbers_check.pack()
 
         # Add "Padding" option
