@@ -163,13 +163,50 @@ class PDFBuilder:
             )
 
     def build_pdf(self):
+        # Create a new dialog window
+        new_window = tk.Toplevel(self.root)
+        new_window.title("Export Options")
+        new_window.geometry("300x200")  # Set window size
+
+        # Add "Add Page Numbers" option
+        add_page_numbers_var = tk.BooleanVar()
+        add_page_numbers_check = tk.Checkbutton(
+            new_window, text="Add Page Numbers", variable=add_page_numbers_var
+        )
+        add_page_numbers_check.pack()
+
+        # Add "Padding" option
+        padding_var = tk.StringVar()
+        padding_var.set("20")  # Set default padding
+        padding_label = tk.Label(new_window, text="Padding:")
+        padding_label.pack()
+        padding_entry = tk.Entry(new_window, textvariable=padding_var)
+        padding_entry.pack()
+
+        # Add "Export" button
+        export_button = tk.Button(
+            new_window,
+            text="Export",
+            command=lambda: self.export_pdf(
+                new_window, add_page_numbers_var.get(), int(padding_var.get())
+            ),
+        )
+        export_button.pack()
+
+    def export_pdf(self, window, add_page_numbers, padding):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         if output_path:
             try:
-                self.pdfs.build_pdf(output_path)
+                self.pdfs.build_pdf(
+                    output_path=output_path,
+                    page_numbers=add_page_numbers,
+                    padding=padding,
+                )
                 messagebox.showinfo("PDF Builder", "PDF has been built successfully.")
             except Exception as e:
                 messagebox.showerror("Error", str(e))
+
+        window.destroy()
 
     def auto_sort(self):
         not_matched = self.pdfs.sort(self.sorter.sort_key)
