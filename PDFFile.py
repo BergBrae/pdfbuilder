@@ -1,5 +1,6 @@
 import os
 from PyPDF2 import PdfReader
+import re
 
 
 class PDFFile:
@@ -8,14 +9,14 @@ class PDFFile:
             raise FileNotFoundError(f"The file '{path}' does not exist.")
         self.path = os.path.normpath(path)
         self.filename = os.path.basename(path)
+
+        filename_without_extension, _ = os.path.splitext(self.filename)
+        filename_parts = re.split(r"[\s_.-]+", filename_without_extension)
+        self.filename_parts = [part.upper() for part in filename_parts]
+
         self._reader = None
         self._num_pages = None
         self.keep_open = keep_open
-        # if open_file:
-        #     self.reader = PdfReader(open(self.path, "rb"), strict=False)
-        #     self.num_pages = len(self.reader.pages)
-        # else:
-        #     self.num_pages, self.reader = None, None
 
     def __hash__(self):
         return hash(self.path)
@@ -28,7 +29,7 @@ class PDFFile:
 
     @property
     def values(self):
-        return (self.filename, self.path)
+        return (self.filename, self.path, self.filename_parts)
 
     @property
     def reader(self):
