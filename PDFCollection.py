@@ -51,7 +51,7 @@ class PDFCollection:
             for pdf in self.files:
                 if key in pdf.filename_parts and pdf not in sorted_files:
                     sorted_files.append(pdf)
-        not_matched = list(set(self.files) - set(sorted_files))
+        not_matched = [pdf for pdf in self.files if pdf not in sorted_files]
         self.files = sorted_files + not_matched
         return not_matched
 
