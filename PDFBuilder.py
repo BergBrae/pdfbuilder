@@ -48,14 +48,14 @@ class PDFBuilder:
 
     def create_treeview(self):
         self.tree = ttk.Treeview(
-            self.root, columns=("File Name", "Path", "Primary Sort"), show="headings"
+            self.root, columns=("File Name", "Path", "Sort Queries"), show="headings"
         )
         self.tree.heading("File Name", text="File Name")
         self.tree.heading("Path", text="Path")
-        self.tree.heading("Primary Sort", text="Primary Sort")
+        self.tree.heading("Sort Queries", text="Sort Queries")
         self.tree.column("File Name", width=200)
         self.tree.column("Path", width=200)
-        self.tree.column("Primary Sort", width=200)
+        self.tree.column("Sort Queries", width=200)
         self.tree.bind("<Double-1>", self.open_file)
         self.tree.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
 
