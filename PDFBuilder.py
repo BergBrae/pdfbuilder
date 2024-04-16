@@ -178,9 +178,11 @@ class PDFBuilder:
         # Add "Padding" option
         padding_var = tk.StringVar()
         padding_var.set("20")  # Set default padding
-        padding_label = tk.Label(new_window, text="Padding:")
+        padding_label = tk.Label(new_window, text="Page Number Padding:")
         padding_label.pack()
-        padding_entry = tk.Entry(new_window, textvariable=padding_var)
+        padding_entry = tk.Entry(
+            new_window, textvariable=padding_var, width=2
+        )  # Set the width of the entry widget
         padding_entry.pack()
 
         # Add "Export" button
