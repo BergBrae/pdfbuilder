@@ -5,7 +5,6 @@ import json
 from PyPDF2 import PdfMerger, PdfReader
 
 from sorting import SortKeyDialog
-from build import build_pdf
 from PDFFile import PDFFile
 from PDFCollection import PDFCollection
 
