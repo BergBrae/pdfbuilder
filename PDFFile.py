@@ -23,7 +23,7 @@ class PDFFile:
         self.text: list[str] = None
         self.extract_text()
 
-        self.classification: list[str] = None
+        self.classifications: list[str] = None
         self.classify()
 
     def __hash__(self):
@@ -62,4 +62,4 @@ class PDFFile:
             self.text.append(page.extract_text())
 
     def classify(self):
-        self.classification = classify_pdf(self.text, self.filename_parts)
+        self.classifications = classify_pdf(self.text, self.filename_parts)
