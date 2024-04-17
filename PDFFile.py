@@ -37,7 +37,7 @@ class PDFFile:
 
     @property
     def values(self):
-        return (self.filename, self.path, self.filename_parts)
+        return (self.filename, self.path, self.filename_parts, "")
 
     @property
     def reader(self):

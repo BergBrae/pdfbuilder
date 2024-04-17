@@ -48,16 +48,47 @@ class PDFBuilder:
 
     def create_treeview(self):
         self.tree = ttk.Treeview(
-            self.root, columns=("File Name", "Path", "Sort Queries"), show="headings"
+            self.root,
+            columns=("File Name", "Path", "Sort Queries", "Bookmark"),
+            show="headings",
         )
         self.tree.heading("File Name", text="File Name")
         self.tree.heading("Path", text="Path")
         self.tree.heading("Sort Queries", text="Sort Queries")
+        self.tree.heading("Bookmark", text="Bookmark")
         self.tree.column("File Name", width=200)
         self.tree.column("Path", width=200)
         self.tree.column("Sort Queries", width=200)
-        self.tree.bind("<Double-1>", self.open_file)
+        self.tree.column("Bookmark", width=200)
+        self.tree.bind("<Double-1>", self.double_click)
         self.tree.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
+
+    def double_click(self, event):
+        column = self.tree.identify_column(event.x)
+        if column == "#4":
+            self.edit_bookmark(event)
+        else:
+            self.open_file(event)
+
+    def edit_bookmark(self, event):
+        row_id = self.tree.focus()
+        column = "#4"
+
+        # We only want to edit if we're on an item
+        if row_id:
+            x, y, width, height = self.tree.bbox(row_id, column)
+            pady = height // 2
+
+            # create and position entry
+            text = self.tree.item(row_id, "values")[int(column[1]) - 1]
+            entry = tk.Entry(self.tree, text=text)
+            entry.place(x=x, y=y + pady, anchor="w")
+
+            def save_edit(event):
+                self.tree.set(row_id, column, entry.get())
+                entry.destroy()
+
+            entry.bind("<Return>", save_edit)
 
     def create_scrollbar(self):
         self.scrollbar = ttk.Scrollbar(
