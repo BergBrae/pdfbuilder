@@ -87,8 +87,11 @@ class PDFBuilder:
             entry.focus_set()
 
             def save_edit(event):
-                self.tree.set(row_id, column, entry.get())
+                filepath = self.tree.item(row_id)["values"][1]
+                pdf = self.pdfs.get_file_by_path(filepath)
+                self.pdfs.bookmarks[pdf] = entry.get()
                 entry.destroy()
+                self.update_tree()
 
             entry.bind("<Return>", save_edit)
 
@@ -301,8 +304,9 @@ class PDFBuilder:
 
     def update_tree(self):
         self.tree.delete(*self.tree.get_children())
-        for pdf in self.pdfs.files:
-            item_id = self.tree.insert("", "end", values=pdf.values)
+        table_values = self.pdfs.get_tkinter_table_data()
+        for values in table_values:
+            item_id = self.tree.insert("", "end", values=values)
 
         self.status_bar.config(text=f"Total Files: {self.pdfs.num_files}")
 

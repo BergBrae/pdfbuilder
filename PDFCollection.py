@@ -12,14 +12,18 @@ from add_page_numers import add_page_number
 class PDFCollection:
     def __init__(self):
         self.files = []
+        self.bookmarks = {}  # {PDFFile: bookmark_title: str}
         self.num_files = 0
-        self.total_pages = 0
 
     def __len__(self):
         return self.num_files
 
     def __contains__(self, pdf: PDFFile):
         return pdf in self.files
+
+    def add_bookmark(self, pdf: PDFFile, title: str):
+        if title:
+            self.bookmarks[pdf] = title
 
     def add_file(self, pdf: PDFFile):
         if pdf not in self:
@@ -56,7 +60,15 @@ class PDFCollection:
         return not_matched
 
     def get_tkinter_table_data(self):
-        return [pdf.values for pdf in self.files]
+        table_values = []
+
+        for pdf in self.files:
+            if pdf in self.bookmarks:
+                bookmark = self.bookmarks[pdf]
+            else:
+                bookmark = ""
+            table_values.append(pdf.values + (bookmark,))
+        return table_values
 
     def move_file_up(self, index):
         if index > 0:
@@ -87,6 +99,12 @@ class PDFCollection:
                 total_pages += num_pages
             else:
                 merger.append(input_pdf_bytes)
+
+            # Add bookmark if it exists for the current PDF
+            if pdf in self.bookmarks:
+                merger.add_outline_item(
+                    self.bookmarks[pdf], total_pages - num_pages
+                )  # total_pages -1 may be wrong
 
         with open(output_path, "wb") as f:
             merger.write(f)

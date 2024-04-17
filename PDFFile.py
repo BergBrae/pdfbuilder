@@ -2,7 +2,7 @@ import os
 from PyPDF2 import PdfReader
 import re
 
-from classify_pdf import classify_pdf
+from PDFClassifier import PDFClassifier
 
 
 class PDFFile:
@@ -24,7 +24,7 @@ class PDFFile:
         self.extract_text()
 
         self.classifications: list[str] = None
-        self.classify()
+        # self.classify()
 
     def __hash__(self):
         return hash(self.path)
@@ -37,7 +37,7 @@ class PDFFile:
 
     @property
     def values(self):
-        return (self.filename, self.path, self.filename_parts, "")
+        return (self.filename, self.path, self.filename_parts)
 
     @property
     def reader(self):
@@ -62,4 +62,4 @@ class PDFFile:
             self.text.append(page.extract_text())
 
     def classify(self):
-        self.classifications = classify_pdf(self.text, self.filename_parts)
+        self.classifications = PDFClassifier(self.text, self.filename_parts)
