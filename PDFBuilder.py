@@ -83,6 +83,8 @@ class PDFBuilder:
             text = self.tree.item(row_id, "values")[int(column[1]) - 1]
             entry = tk.Entry(self.tree, text=text)
             entry.place(x=x, y=y + pady, anchor="w")
+            # set focus and selection
+            entry.focus_set()
 
             def save_edit(event):
                 self.tree.set(row_id, column, entry.get())
