@@ -276,10 +276,11 @@ class PDFBuilder:
 
         if num_not_matched > 0:
             self.tree.selection_set(non_matched_ids)
+            non_matching = "\n".join([pdf.filename for pdf in not_matched])
 
             messagebox.showinfo(
                 "PDF Builder",
-                f"{num_not_matched} files did not match the sort key:\n\n{'\n'.join([pdf.filename for pdf in not_matched])}",
+                f"{num_not_matched} files did not match the sort key:\n\n{non_matching}",
             )
 
     def get_item_id_from_value(self, tree, column, value):
