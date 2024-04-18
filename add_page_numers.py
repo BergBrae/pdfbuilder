@@ -3,7 +3,7 @@ from reportlab.pdfgen import canvas
 import PyPDF2
 
 
-def add_page_number(input_pdf_bytes, y=20, font_size=12):
+def add_page_number(input_pdf_bytes, y_padding=20, font_size=12):
     # Create a new PDF, but just with page numbers.
     packet = BytesIO()
     can = canvas.Canvas(packet)
@@ -25,7 +25,7 @@ def add_page_number(input_pdf_bytes, y=20, font_size=12):
             can.setFont(font, font_size)
             can.drawString(
                 (int(page_width) - int(text_width)) // 2,
-                y,
+                y_padding,
                 str_to_show,
             )
         can.showPage()

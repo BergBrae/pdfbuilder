@@ -94,7 +94,9 @@ class PDFCollection:
                 self.files[index],
             )
 
-    def build_pdf(self, output_path: str, page_numbers=True, padding=20):
+    def build_pdf(
+        self, output_path: str, page_numbers=True, y_padding=20, font_size=12
+    ):
         writer = PdfWriter()
         current_page = 0
         bookmarks = []  # [(page_number, title),]
@@ -103,14 +105,14 @@ class PDFCollection:
                 writer.add_page(page)
                 current_page += 1
 
-            if pdf in self.bookmarks:
+            if pdf in self.bookmarks and self.bookmarks[pdf].strip():
                 bookmarks.append((current_page - pdf.num_pages, self.bookmarks[pdf]))
 
         if page_numbers:
             packet = BytesIO()
             writer.write(packet)
             packet.seek(0)
-            packet = add_page_number(packet, y=20, font_size=12)
+            packet = add_page_number(packet, y_padding=y_padding, font_size=font_size)
             reader = PdfReader(packet)
             writer = PdfWriter()
             current_page = 0

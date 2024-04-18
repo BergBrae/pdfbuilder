@@ -213,26 +213,39 @@ class PDFBuilder:
         # Add "Padding" option
         padding_var = tk.StringVar()
         padding_var.set("20")  # Set default padding
-        padding_label = tk.Label(new_window, text="Page Number Padding:")
+        padding_label = tk.Label(new_window, text="Page Number Bottom Padding:")
         padding_label.pack()
         padding_entry = tk.Entry(
             new_window, textvariable=padding_var, width=2
         )  # Set the width of the entry widget
         padding_entry.pack()
 
+        # Add "Font Size" option
+        font_size_var = tk.IntVar()
+        font_size_var.set(12)  # Set default font size
+        font_size_label = tk.Label(new_window, text="Font Size:")
+        font_size_label.pack()
+        font_size_slider = tk.Scale(
+            new_window, from_=5, to=15, orient=tk.HORIZONTAL, variable=font_size_var
+        )
+        font_size_slider.pack()
+
         # Add "Export" button
         export_button = tk.Button(
             new_window,
             text="Export",
             command=lambda: self.export_pdf(
-                new_window, add_page_numbers_var.get(), int(padding_var.get())
+                new_window,
+                add_page_numbers_var.get(),
+                int(padding_var.get()),
+                font_size_var.get(),
             ),
         )
         export_button.pack()
         new_window.bind("<Return>", lambda e: export_button.invoke())
         new_window.focus_set()
 
-    def export_pdf(self, window, add_page_numbers, padding):
+    def export_pdf(self, window, add_page_numbers, y_padding, font_size):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         window.destroy()
         if output_path:
@@ -240,7 +253,8 @@ class PDFBuilder:
                 self.pdfs.build_pdf(
                     output_path=output_path,
                     page_numbers=add_page_numbers,
-                    padding=padding,
+                    y_padding=y_padding,
+                    font_size=font_size,
                 )
                 messagebox.showinfo("PDF Builder", "PDF has been built successfully.")
             except Exception as e:
