@@ -13,19 +13,21 @@ def add_page_number(input_pdf_bytes, y=20, font_size=12):
     total_num_pages = len(pdf.pages)
     for page_num in range(total_num_pages):
         page = pdf.pages[page_num]
-        page_width, page_height = (
-            page.mediabox[2],
-            page.mediabox[3],
-        )  # Get the actual page width and height
-        str_to_show = f"Page {page_num + 1} of {total_num_pages}"
-        text_width = can.stringWidth(str_to_show, font, font_size)
-        can.setPageSize((page_width, page_height))  # Set the actual page size
-        can.setFont(font, font_size)
-        can.drawString(
-            (int(page_width) - int(text_width)) // 2,
-            y,
-            str_to_show,
-        )
+        rotation = page.get("/Rotate")  # Rotation is not None for scanned PDFs
+        if rotation is None:
+            page_width, page_height = (
+                page.mediabox[2],
+                page.mediabox[3],
+            )  # Get the actual page width and height
+            str_to_show = f"Page {page_num + 1} of {total_num_pages}"
+            text_width = can.stringWidth(str_to_show, font, font_size)
+            can.setPageSize((page_width, page_height))  # Set the actual page size
+            can.setFont(font, font_size)
+            can.drawString(
+                (int(page_width) - int(text_width)) // 2,
+                y,
+                str_to_show,
+            )
         can.showPage()
     can.save()
 
