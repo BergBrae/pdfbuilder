@@ -14,7 +14,7 @@ def add_page_number(input_pdf_bytes, y_padding=20, font_size=12):
     for page_num in range(total_num_pages):
         page = pdf.pages[page_num]
         rotation = page.get("/Rotate")  # Rotation is not None for scanned PDFs
-        if rotation is None:
+        if True:  # if rotation is None:
             page_width, page_height = (
                 page.mediabox[2],
                 page.mediabox[3],
