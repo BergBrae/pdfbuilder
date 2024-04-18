@@ -28,6 +28,10 @@ class PDFCollection:
         if title:
             self.bookmarks[pdf] = title
 
+    def remove_bookmark(self, pdf: PDFFile):
+        if pdf in self.bookmarks:
+            del self.bookmarks[pdf]
+
     def add_file(self, pdf: PDFFile):
         if pdf not in self:
             self.files.append(pdf)
@@ -36,16 +40,19 @@ class PDFCollection:
     def remove_file(self, pdf: PDFFile):
         self.files.remove(pdf)
         self.num_files -= 1
+        self.remove_bookmark(pdf)
 
     def remove_by_path(self, path: str):
         for pdf in self.files:
             if pdf.path == path:
                 self.files.remove(pdf)
                 self.num_files -= 1
+                self.remove_bookmark(pdf)
 
     def clear_files(self):
         self.files.clear()
         self.num_files = 0
+        self.bookmarks.clear()
 
     def get_file_by_path(self, path: str):
         for pdf in self.files:
