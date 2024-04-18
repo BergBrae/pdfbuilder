@@ -73,6 +73,7 @@ class PDFBuilder:
     def edit_bookmark(self, event):
         row_id = self.tree.focus()
         column = "#4"
+        column_idx = int(column[1]) - 1
 
         # We only want to edit if we're on an item
         if row_id:
@@ -80,8 +81,9 @@ class PDFBuilder:
             pady = height // 2
 
             # create and position entry
-            text = self.tree.item(row_id, "values")[int(column[1]) - 1]
-            entry = tk.Entry(self.tree, text=text)
+            text = self.tree.item(row_id, "values")[column_idx]
+            entry = tk.Entry(self.tree)
+            entry.insert(0, text)
             entry.place(x=x, y=y + pady, anchor="w")
             # set focus and selection
             entry.focus_set()
@@ -94,6 +96,7 @@ class PDFBuilder:
                 self.update_tree()
 
             entry.bind("<Return>", save_edit)
+            entry.bind("<FocusOut>", save_edit)
 
     def create_scrollbar(self):
         self.scrollbar = ttk.Scrollbar(
