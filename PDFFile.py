@@ -2,11 +2,11 @@ import os
 from PyPDF2 import PdfReader
 import re
 
-from classify_pdf import classify_pdf
+from PDFClassifier import PDFClassifier
 
 
 class PDFFile:
-    def __init__(self, path: str, keep_open=False, check_exists=True):
+    def __init__(self, path: str, keep_open=True, check_exists=True):
         if check_exists and not os.path.exists(path):
             raise FileNotFoundError(f"The file '{path}' does not exist.")
         self.path = os.path.normpath(path)
@@ -20,11 +20,10 @@ class PDFFile:
         self._num_pages = None
         self.keep_open = keep_open
 
-        self.text: list[str] = None
-        self.extract_text()
+        self._text: list[str] = None
 
         self.classifications: list[str] = None
-        self.classify()
+        # self.classify()
 
     def __hash__(self):
         return hash(self.path)
@@ -56,10 +55,13 @@ class PDFFile:
 
         return self._num_pages
 
-    def extract_text(self) -> list[str]:
-        self.text = []
-        for page in self.reader.pages:
-            self.text.append(page.extract_text())
+    @property
+    def text(self) -> list[str]:
+        if self._text is None:
+            self._text = []
+            for page in self.reader.pages:
+                self._text.append(page.extract_text())
+        return self._text
 
     def classify(self):
-        self.classifications = classify_pdf(self.text, self.filename_parts)
+        self.classifications = PDFClassifier(self.text, self.filename_parts)

@@ -39,7 +39,7 @@ class PDFBuilder:
             ("Add Files", self.add_files),
             ("Add Directory", self.add_directory),
             ("Sort Key", self.sort_key),
-            ("Settings", self.open_settings),
+            # ("Settings", self.open_settings), # Not yet implemented
         ]
 
         for button_text, command in toolbar_buttons:
@@ -48,16 +48,55 @@ class PDFBuilder:
 
     def create_treeview(self):
         self.tree = ttk.Treeview(
-            self.root, columns=("File Name", "Path", "Sort Queries"), show="headings"
+            self.root,
+            columns=("File Name", "Path", "Sort Queries", "Bookmark"),
+            show="headings",
         )
         self.tree.heading("File Name", text="File Name")
         self.tree.heading("Path", text="Path")
         self.tree.heading("Sort Queries", text="Sort Queries")
+        self.tree.heading("Bookmark", text="Bookmark")
         self.tree.column("File Name", width=200)
         self.tree.column("Path", width=200)
         self.tree.column("Sort Queries", width=200)
-        self.tree.bind("<Double-1>", self.open_file)
+        self.tree.column("Bookmark", width=200)
+        self.tree.bind("<Double-1>", self.double_click)
         self.tree.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
+
+    def double_click(self, event):
+        column = self.tree.identify_column(event.x)
+        if column == "#4":
+            self.edit_bookmark(event)
+        else:
+            self.open_file(event)
+
+    def edit_bookmark(self, event):
+        row_id = self.tree.focus()
+        column = "#4"
+        column_idx = int(column[1]) - 1
+
+        # We only want to edit if we're on an item
+        if row_id:
+            x, y, width, height = self.tree.bbox(row_id, column)
+            pady = height // 2
+
+            # create and position entry
+            text = self.tree.item(row_id, "values")[column_idx]
+            entry = tk.Entry(self.tree)
+            entry.insert(0, text)
+            entry.place(x=x, y=y + pady, anchor="w")
+            # set focus and selection
+            entry.focus_set()
+
+            def save_edit(event):
+                filepath = self.tree.item(row_id)["values"][1]
+                pdf = self.pdfs.get_file_by_path(filepath)
+                self.pdfs.bookmarks[pdf] = entry.get()
+                entry.destroy()
+                self.update_tree()
+
+            entry.bind("<Return>", save_edit)
+            entry.bind("<FocusOut>", save_edit)
 
     def create_scrollbar(self):
         self.scrollbar = ttk.Scrollbar(
@@ -198,6 +237,8 @@ class PDFBuilder:
             ),
         )
         export_button.pack()
+        new_window.bind("<Return>", lambda e: export_button.invoke())
+        new_window.focus_set()
 
     def export_pdf(self, window, add_page_numbers, padding):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
@@ -268,8 +309,9 @@ class PDFBuilder:
 
     def update_tree(self):
         self.tree.delete(*self.tree.get_children())
-        for pdf in self.pdfs.files:
-            item_id = self.tree.insert("", "end", values=pdf.values)
+        table_values = self.pdfs.get_tkinter_table_data()
+        for values in table_values:
+            item_id = self.tree.insert("", "end", values=values)
 
         self.status_bar.config(text=f"Total Files: {self.pdfs.num_files}")
 
