@@ -94,6 +94,10 @@ class PDFCollection:
                 self.files[index],
             )
 
+    def clear_readers(self):
+        for pdf in self.files:
+            pdf._reader = None
+
     def build_pdf(
         self, output_path: str, page_numbers=True, y_padding=20, font_size=12
     ):
