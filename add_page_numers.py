@@ -18,7 +18,7 @@ def add_page_number(input_pdf_bytes, start_page_number=1, padding=20):
         )
         can.setPageSize((page_width, page.mediabox[3]))  # Set the actual page size
         can.drawString(
-            page_width - text_width - padding,
+            int(page_width) - int(text_width) - int(padding),
             padding,
             str(start_page_number + page_num),
         )
