@@ -237,6 +237,7 @@ class PDFBuilder:
             ),
         )
         export_button.pack()
+        new_window.bind("<Return>", lambda e: export_button.invoke())
 
     def export_pdf(self, window, add_page_numbers, padding):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
