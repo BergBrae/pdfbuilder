@@ -39,7 +39,7 @@ class PDFBuilder:
             ("Add Files", self.add_files),
             ("Add Directory", self.add_directory),
             ("Sort Key", self.sort_key),
-            ("Settings", self.open_settings),
+            # ("Settings", self.open_settings), # Not yet implemented
         ]
 
         for button_text, command in toolbar_buttons:
@@ -238,6 +238,7 @@ class PDFBuilder:
         )
         export_button.pack()
         new_window.bind("<Return>", lambda e: export_button.invoke())
+        new_window.focus_set()
 
     def export_pdf(self, window, add_page_numbers, padding):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
