@@ -37,7 +37,7 @@ def add_page_number(input_pdf_bytes, start_page_number=1, padding=20):
     output_pdf_bytes = BytesIO()
     pdf_writer.write(output_pdf_bytes)
     output_pdf_bytes.seek(0)
-    return output_pdf_bytes, len(pdf.pages)
+    return output_pdf_bytes
 
 
 if __name__ == "__main__":
