@@ -20,8 +20,7 @@ class PDFFile:
         self._num_pages = None
         self.keep_open = keep_open
 
-        self.text: list[str] = None
-        self.extract_text()
+        self._text: list[str] = None
 
         self.classifications: list[str] = None
         # self.classify()
@@ -56,10 +55,13 @@ class PDFFile:
 
         return self._num_pages
 
-    def extract_text(self) -> list[str]:
-        self.text = []
-        for page in self.reader.pages:
-            self.text.append(page.extract_text())
+    @property
+    def text(self) -> list[str]:
+        if self._text is None:
+            self._text = []
+            for page in self.reader.pages:
+                self._text.append(page.extract_text())
+        return self._text
 
     def classify(self):
         self.classifications = PDFClassifier(self.text, self.filename_parts)
