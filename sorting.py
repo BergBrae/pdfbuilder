@@ -5,7 +5,7 @@ import os
 class SortKeyDialog:
     def __init__(self, parent):
         self.parent = parent
-        self.load_sort_key()
+        self._sort_key = None
 
     def load_sort_key(self):
         # Load sort key from file
@@ -36,4 +36,6 @@ class SortKeyDialog:
 
     @property
     def sort_key(self):
+        if self._sort_key is None:
+            self.load_sort_key()
         return self._sort_key

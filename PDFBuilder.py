@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog, messagebox, Toplevel
 import os
 import json
 from PyPDF2 import PdfMerger, PdfReader
+import pickle as pkl
 
 from sorting import SortKeyDialog
 from PDFFile import PDFFile
@@ -173,36 +174,27 @@ class PDFBuilder:
         save_button.pack(side=tk.BOTTOM)
 
     def save_state(self):
-        file_paths = [pdf.path for pdf in self.pdfs.files]
-        output_path = filedialog.asksaveasfilename(defaultextension=".json")
+        output_path = filedialog.asksaveasfilename(defaultextension=".pdfbuilder")
+        to_save = (self.pdfs, self.sorter.sort_key)
 
-        with open(output_path, "w") as f:
-            json.dump(file_paths, f)
+        if output_path:
+            with open(output_path, "wb") as f:
+                pkl.dump(to_save, f)
+            messagebox.showinfo("PDF Builder", "State has been saved successfully.")
 
     def load_state(self):
         input_path = filedialog.askopenfilename(
-            filetypes=[("PDF Builder Saves", "*.json")]
+            filetypes=[("PDF Builder Saves", "*.pdfbuilder")]
         )
 
-        with open(input_path, "r") as f:
-            file_paths = json.load(f)
+        with open(input_path, "rb") as f:
+            self.pdfs, sort_key = pkl.load(f)
 
-        does_not_exist = []
-
-        for file_path in file_paths:
-            try:
-                pdf = PDFFile(file_path, check_exists=True)
-                self.pdfs.add_file(pdf)
-            except FileNotFoundError as e:
-                does_not_exist.append(file_path)
+        with open("sort_key.txt", "w") as f:
+            for item in sort_key:
+                f.write("%s\n" % item)
 
         self.update_tree()
-
-        if does_not_exist:
-            paths_text = "\n".join(does_not_exist)
-            messagebox.showwarning(
-                "Warning", f"The following files do not exist:\n{paths_text}"
-            )
 
     def build_pdf(self):
         # Create a new dialog window
