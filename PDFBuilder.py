@@ -4,6 +4,7 @@ import os
 import json
 from PyPDF2 import PdfMerger, PdfReader
 import pickle as pkl
+from copy import deepcopy
 
 from sorting import SortKeyDialog
 from PDFFile import PDFFile
@@ -175,6 +176,8 @@ class PDFBuilder:
 
     def save_state(self):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdfbuilder")
+        # readers cannot be pickled
+        self.pdfs.clear_readers()
         to_save = (self.pdfs, self.sorter.sort_key)
 
         if output_path:
@@ -222,7 +225,7 @@ class PDFBuilder:
 
         # Add "Font Size" option
         font_size_var = tk.IntVar()
-        font_size_var.set(12)  # Set default font size
+        font_size_var.set(10)  # Set default font size
         font_size_label = tk.Label(new_window, text="Font Size:")
         font_size_label.pack()
         font_size_slider = tk.Scale(
