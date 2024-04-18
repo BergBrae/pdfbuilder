@@ -1,5 +1,2 @@
 Current Problems with page numbers:
     - Fix adding page numbers to scanned pages (skipped for now)
-    - Allow font and y spacing to be adjusted
-    - Update load/save for bookmarks
-        to/from json for PDFFile and PDFCollection
