@@ -21,6 +21,9 @@ class PDFCollection:
     def __contains__(self, pdf: PDFFile):
         return pdf in self.files
 
+    def __iter__(self):
+        return iter(self.files)
+
     def add_bookmark(self, pdf: PDFFile, title: str):
         if title:
             self.bookmarks[pdf] = title
@@ -86,24 +89,25 @@ class PDFCollection:
 
     def build_pdf(self, output_path: str, page_numbers=True, padding=20):
         merger = PdfMerger()  # Can add bookmarks with PdfMerger
-        total_pages = 0
+        start_page_number = 0
+        total_pages = sum(pdf.num_pages for pdf in self)
         for pdf in self.files:
             with open(pdf.path, "rb") as f:
                 input_pdf_bytes = BytesIO(f.read())
 
             if page_numbers:
                 output_pdf_bytes, num_pages = add_page_number(
-                    input_pdf_bytes, total_pages + 1, padding
+                    input_pdf_bytes, total_pages, start_page_number + 1, padding
                 )
                 merger.append(output_pdf_bytes)
-                total_pages += num_pages
+                start_page_number += num_pages
             else:
                 merger.append(input_pdf_bytes)
 
             # Add bookmark if it exists for the current PDF
             if pdf in self.bookmarks:
                 merger.add_outline_item(
-                    self.bookmarks[pdf], total_pages - num_pages
+                    self.bookmarks[pdf], start_page_number - num_pages
                 )  # total_pages -1 may be wrong
 
         with open(output_path, "wb") as f:
