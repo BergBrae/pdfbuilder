@@ -7,6 +7,7 @@ from io import BytesIO
 
 from PDFFile import PDFFile
 from add_page_numers import add_page_number
+from open_file import open_file
 
 
 class PDFCollection:
@@ -129,4 +130,4 @@ class PDFCollection:
 
         writer.write(output_path)
 
-        os.startfile(output_path)
+        open_file(output_path)

@@ -9,6 +9,7 @@ from copy import deepcopy
 from sorting import SortKeyDialog
 from PDFFile import PDFFile
 from PDFCollection import PDFCollection
+from open_file import open_file
 
 
 class PDFBuilder:
@@ -314,7 +315,7 @@ class PDFBuilder:
     def open_file(self, event):
         item = self.tree.focus()
         file_path = self.tree.item(item)["values"][1]
-        os.startfile(file_path)
+        open_file(file_path)
 
     def update_tree(self):
         self.tree.delete(*self.tree.get_children())
