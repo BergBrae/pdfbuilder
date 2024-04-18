@@ -25,6 +25,7 @@ class SortKeyDialog:
 
         self.text.insert("1.0", "\n".join(self.sort_key))
         self.dialog.bind("<Control-s>", lambda e: self.save())
+        self.text.focus_set()
 
     def save(self):
         self._sort_key = self.text.get("1.0", "end-1c").strip().upper().split("\n")
