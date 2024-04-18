@@ -6,7 +6,7 @@ from PDFClassifier import PDFClassifier
 
 
 class PDFFile:
-    def __init__(self, path: str, keep_open=False, check_exists=True):
+    def __init__(self, path: str, keep_open=True, check_exists=True):
         if check_exists and not os.path.exists(path):
             raise FileNotFoundError(f"The file '{path}' does not exist.")
         self.path = os.path.normpath(path)

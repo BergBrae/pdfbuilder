@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, Toplevel
 import os
 import json
-from PyPDF2 import PdfMerger, PdfReader
+from PyPDF2 import PdfWriter, PdfReader
 from io import BytesIO
 
 from PDFFile import PDFFile
@@ -88,28 +88,24 @@ class PDFCollection:
             )
 
     def build_pdf(self, output_path: str, page_numbers=True, padding=20):
-        merger = PdfMerger()  # Can add bookmarks with PdfMerger
-        start_page_number = 0
-        total_pages = sum(pdf.num_pages for pdf in self)
-        for pdf in self.files:
-            with open(pdf.path, "rb") as f:
-                input_pdf_bytes = BytesIO(f.read())
-
-            if page_numbers:
-                output_pdf_bytes, num_pages = add_page_number(
-                    input_pdf_bytes, total_pages, start_page_number + 1, padding
-                )
-                merger.append(output_pdf_bytes)
-                start_page_number += num_pages
-            else:
-                merger.append(input_pdf_bytes)
+        writer = PdfWriter()
+        num_total_pages = sum(pdf.num_pages for pdf in self)
+        for pdf in self:
+            for page in pdf.reader.pages:
+                writer.add_page(page)
 
             # Add bookmark if it exists for the current PDF
             if pdf in self.bookmarks:
-                merger.add_outline_item(
-                    self.bookmarks[pdf], start_page_number - num_pages
-                )  # total_pages -1 may be wrong
+                writer.add_outline_item(
+                    self.bookmarks[pdf], -1 * pdf.num_pages
+                )  # negative counts from the end
+        if page_numbers:
+            packet = BytesIO()
+            writer.write(packet)
+            packet.seek(0)
+            packet = add_page_number(packet)
+            writer = PdfWriter()
+            writer.append_pages_from_reader(PdfReader(packet))
 
         with open(output_path, "wb") as f:
-            merger.write(f)
-        merger.close()
+            writer.write(f)
