@@ -1,5 +1,4 @@
-After fixes below, test that bookmarks are placed on the correct page.
-
-Fix Issues (bookmarks branch):
-Fix issue where not pressing enter after changing bookmark
-file:///F:/data/CLIENTS/DELPHI/QC/East/Sent%20QC/2007/QC-S31729.01(01).PDF can not be exported
+Current Problems with page numbers:
+    - Font size cannot be changed
+    - text is not quite centered
+    - Page number is printed on right side of horizontal pages

@@ -3,24 +3,25 @@ from reportlab.pdfgen import canvas
 import PyPDF2
 
 
-def add_page_number(input_pdf_bytes, start_page_number=1, padding=20):
+def add_page_number(input_pdf_bytes, y=20):
     # Create a new PDF, but just with page numbers.
     packet = BytesIO()
     can = canvas.Canvas(packet)
-    can.setFont("Times-Roman", 12)
+    font, font_size = "Times-Roman", 12
+    can.setFont(font, font_size)
     # Other available fonts: Times-Roman, Courier, Symbol, ZapfDingbats, etc.
     pdf = PyPDF2.PdfReader(input_pdf_bytes)
-    for page_num in range(len(pdf.pages)):
+    total_num_pages = len(pdf.pages)
+    for page_num in range(total_num_pages):
         page = pdf.pages[page_num]
         page_width = page.mediabox[2]  # Get the actual page width
-        text_width = can.stringWidth(
-            str(start_page_number + page_num), "Times-Roman", 12
-        )
+        str_to_show = f"Page {page_num + 1} of {total_num_pages}"
+        text_width = can.stringWidth(str_to_show, font, font_size)
         can.setPageSize((page_width, page.mediabox[3]))  # Set the actual page size
         can.drawString(
-            int(page_width) - int(text_width) - int(padding),
-            padding,
-            str(start_page_number + page_num),
+            (int(page_width) - int(text_width)) // 2,
+            y,
+            str_to_show,
         )
         can.showPage()
     can.save()
