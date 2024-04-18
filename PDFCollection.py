@@ -96,23 +96,31 @@ class PDFCollection:
 
     def build_pdf(self, output_path: str, page_numbers=True, padding=20):
         writer = PdfWriter()
-        num_total_pages = sum(pdf.num_pages for pdf in self)
+        current_page = 0
+        bookmarks = []  # [(page_number, title),]
         for pdf in self:
             for page in pdf.reader.pages:
                 writer.add_page(page)
+                current_page += 1
 
-            # Add bookmark if it exists for the current PDF
             if pdf in self.bookmarks:
-                writer.add_outline_item(
-                    self.bookmarks[pdf], -1 * pdf.num_pages
-                )  # negative counts from the end
+                bookmarks.append((current_page - pdf.num_pages, self.bookmarks[pdf]))
+
         if page_numbers:
             packet = BytesIO()
             writer.write(packet)
             packet.seek(0)
-            packet = add_page_number(packet)
+            packet = add_page_number(packet, y=20, font_size=12)
+            reader = PdfReader(packet)
             writer = PdfWriter()
-            writer.append_pages_from_reader(PdfReader(packet))
+            current_page = 0
+            for page in reader.pages:
+                writer.add_page(page)
+                current_page += 1
 
-        with open(output_path, "wb") as f:
-            writer.write(f)
+        for page_number, title in bookmarks:
+            writer.add_outline_item(title, page_number, parent=None)
+
+        writer.write(output_path)
+
+        os.startfile(output_path)
