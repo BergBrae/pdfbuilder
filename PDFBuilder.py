@@ -234,6 +234,7 @@ class PDFBuilder:
 
     def export_pdf(self, window, add_page_numbers, padding):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
+        window.destroy()
         if output_path:
             try:
                 self.pdfs.build_pdf(
@@ -244,8 +245,6 @@ class PDFBuilder:
                 messagebox.showinfo("PDF Builder", "PDF has been built successfully.")
             except Exception as e:
                 messagebox.showerror("Error", str(e))
-
-        window.destroy()
 
     def auto_sort(self):
         not_matched = self.pdfs.sort(self.sorter.sort_key)
