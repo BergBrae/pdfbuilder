@@ -29,6 +29,14 @@ class PDFBuilder:
         self.create_scrollbar()
         self.create_bottom_buttons()
         self.create_status_bar()
+        self.root.bind("<Control-b>", self.build_pdf)
+        self.root.bind("<Control-s>", self.sort_key)
+        self.root.bind("<Control-d>", self.add_directory)
+        self.root.bind("<Control-Shift-S>", self.auto_sort)
+        self.root.bind("<BackSpace>", self.remove_selected)
+        self.root.bind("<Control-q>", exit)
+        self.root.bind("<Control-c>", self.clear_files)
+        self.tree.bind("<Return>", self.edit_bookmark)
 
     def create_toolbar(self):
         self.toolbar_frame = tk.Frame(self.root)
@@ -130,7 +138,7 @@ class PDFBuilder:
         )
         self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
-    def clear_files(self):
+    def clear_files(self, event=None):
         self.pdfs.clear_files()
         self.update_tree()
 
@@ -142,14 +150,14 @@ class PDFBuilder:
                 self.pdfs.add_file(PDFFile(filepath))
             self.update_tree()
 
-    def remove_selected(self):
+    def remove_selected(self, event=None):
         selected_items = self.tree.selection()
         for item in selected_items:
             filepath = self.tree.item(item)["values"][1]
             self.pdfs.remove_by_path(filepath)
         self.update_tree()
 
-    def add_directory(self):
+    def add_directory(self, event=None):
         directory = filedialog.askdirectory()
         if directory:
             pdf_files = []
@@ -162,7 +170,7 @@ class PDFBuilder:
                 self.pdfs.add_file(PDFFile(full_path))
             self.update_tree()
 
-    def sort_key(self):
+    def sort_key(self, event=None):
         self.sort_dialog = SortKeyDialog(self.root)
         self.sort_dialog.open_dialog()
         self.root.wait_window(self.sort_dialog.dialog)
@@ -200,7 +208,7 @@ class PDFBuilder:
 
         self.update_tree()
 
-    def build_pdf(self):
+    def build_pdf(self, event=None):
         # Create a new dialog window
         new_window = tk.Toplevel(self.root)
         new_window.title("Export Options")
@@ -264,7 +272,7 @@ class PDFBuilder:
             except Exception as e:
                 messagebox.showerror("Error", str(e))
 
-    def auto_sort(self):
+    def auto_sort(self, event=None):
         not_matched = self.pdfs.sort(self.sorter.sort_key)
         self.update_tree()
         num_not_matched = len(not_matched)
@@ -290,7 +298,7 @@ class PDFBuilder:
                 return item_id
         return None
 
-    def move_file_down(self):
+    def move_file_down(self, event=None):
         selected_items = self.tree.selection()
         selected_ids = [self.tree.item(item)["values"][0] for item in selected_items]
         for selected_item in reversed(selected_items):
@@ -301,7 +309,7 @@ class PDFBuilder:
             item_id = self.get_item_id_from_value(self.tree, 0, id)
             self.tree.selection_add(item_id)
 
-    def move_file_up(self):
+    def move_file_up(self, event=None):
         selected_items = self.tree.selection()
         selected_ids = [self.tree.item(item)["values"][0] for item in selected_items]
         for selected_item in selected_items:
