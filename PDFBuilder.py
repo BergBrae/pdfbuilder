@@ -12,6 +12,10 @@ from PDFCollection import PDFCollection
 from open_file import open_file
 
 
+def _exit(event=None):
+    root.quit()
+
+
 class PDFBuilder:
     def __init__(self, root):
         self.root = root
@@ -34,7 +38,7 @@ class PDFBuilder:
         self.root.bind("<Control-d>", self.add_directory)
         self.root.bind("<Control-Shift-S>", self.auto_sort)
         self.root.bind("<BackSpace>", self.remove_selected)
-        self.root.bind("<Control-q>", exit)
+        self.root.bind("<Control-q>", _exit)
         self.root.bind("<Control-c>", self.clear_files)
         self.tree.bind("<Return>", self.edit_bookmark)
 
