@@ -1,2 +1,1 @@
-Current Problems with page numbers:
-    - Fix adding page numbers to scanned pages (skipped for now)
+Show progress when exporting?
