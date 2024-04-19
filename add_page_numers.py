@@ -31,8 +31,8 @@ def add_page_number(input_pdf_bytes, y_padding=20, font_size=12):
             y = -page_height + y_padding
         elif rotation == 270:
             can.rotate(-90)  # Rotating -90 is equivalent to rotating 270 clockwise
-            x = -page_height + y_padding
-            y = (page_width + text_width) / 2
+            x = (-page_height - text_width) / 2
+            y = y_padding
         else:  # rotation == 0 or None
             x = (page_width - text_width) / 2
             y = y_padding
