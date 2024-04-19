@@ -105,17 +105,13 @@ class PDFCollection:
         page_numbers=True,
         y_padding=20,
         font_size=12,
-        progress_bar=None,
-        update_idletasks=None,
     ):
-        progress_bar["value"] = 0
-        update_idletasks()
         writer = PdfWriter()
         current_page = 0
         bookmarks = []  # [(page_number, title),]
         for i, pdf in enumerate(self):
-            progress_bar["value"] = (i + 1) / len(self.files) * 100
-            update_idletasks()
+            progress = (i + 1) / len(self.files) * 70
+            yield progress  # Yield progress value
             for page in pdf.reader.pages:
                 writer.add_page(page)
                 current_page += 1
@@ -135,9 +131,15 @@ class PDFCollection:
                 writer.add_page(page)
                 current_page += 1
 
+        progress = 95
+        yield progress
+
         for page_number, title in bookmarks:
             writer.add_outline_item(title, page_number, parent=None)
 
         writer.write(output_path)
+
+        progress = 100
+        yield progress
 
         open_file(output_path)
