@@ -262,19 +262,31 @@ class PDFBuilder:
         new_window.focus_set()
 
     def export_pdf(self, window, add_page_numbers, y_padding, font_size):
-        output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         window.destroy()
+        output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         if output_path:
             try:
+                progress = self.export_progress_window()
                 self.pdfs.build_pdf(
                     output_path=output_path,
                     page_numbers=add_page_numbers,
                     y_padding=y_padding,
                     font_size=font_size,
+                    progress_bar=progress,
+                    update_idletasks=self.root.update_idletasks,
                 )
                 messagebox.showinfo("PDF Builder", "PDF has been built successfully.")
             except Exception as e:
                 messagebox.showerror("Error", str(e))
+                raise e
+
+    def export_progress_window(self) -> ttk.Progressbar:
+        progress_window = Toplevel(self.root)
+        progress_window.title("Building PDF")
+        progress_window.geometry("300x50")
+        progress = ttk.Progressbar(progress_window, length=200, mode="determinate")
+        progress.pack()
+        return progress
 
     def auto_sort(self, event=None):
         not_matched = self.pdfs.sort(self.sorter.sort_key)

@@ -100,12 +100,22 @@ class PDFCollection:
             pdf._reader = None
 
     def build_pdf(
-        self, output_path: str, page_numbers=True, y_padding=20, font_size=12
+        self,
+        output_path: str,
+        page_numbers=True,
+        y_padding=20,
+        font_size=12,
+        progress_bar=None,
+        update_idletasks=None,
     ):
+        progress_bar["value"] = 0
+        update_idletasks()
         writer = PdfWriter()
         current_page = 0
         bookmarks = []  # [(page_number, title),]
-        for pdf in self:
+        for i, pdf in enumerate(self):
+            progress_bar["value"] = (i + 1) / len(self.files) * 100
+            update_idletasks()
             for page in pdf.reader.pages:
                 writer.add_page(page)
                 current_page += 1
