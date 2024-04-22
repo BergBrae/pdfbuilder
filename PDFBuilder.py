@@ -244,14 +244,14 @@ class PDFBuilder:
         padding_entry.pack()
 
         # Add "Font Size" option
-        font_size_var = tk.IntVar()
-        font_size_var.set(10)  # Set default font size
+        font_size_var = tk.StringVar()
+        font_size_var.set("10")  # Set default font size
         font_size_label = tk.Label(new_window, text="Font Size:")
         font_size_label.pack()
-        font_size_slider = tk.Scale(
-            new_window, from_=5, to=15, orient=tk.HORIZONTAL, variable=font_size_var
-        )
-        font_size_slider.pack()
+        font_size_entry = tk.Entry(
+            new_window, textvariable=font_size_var, width=2
+        )  # Set the width of the entry widget
+        font_size_entry.pack()
 
         # Add "Export" button
         export_button = tk.Button(
@@ -261,7 +261,7 @@ class PDFBuilder:
                 new_window,
                 add_page_numbers_var.get(),
                 int(padding_var.get()),
-                font_size_var.get(),
+                int(font_size_var.get()),
             ),
         )
         export_button.pack()
