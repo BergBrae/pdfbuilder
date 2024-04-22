@@ -37,11 +37,6 @@ The PDF Builder repository contains a set of Python scripts that facilitate the 
 - **Building PDFs**: Compile selected PDF files into a single document with optional page numbers, bookmarks, and specified page settings.
 - **Exporting PDFs**: After arranging and optionally merging files, use the "Build PDF" button to save the final PDF to a desired location.
 
-#### Building an Executable
-To create a standalone executable of PDFBuilder:
-1. Run the batch file `build_exe.bat`. This script uses PyInstaller to build an executable.
-2. The executable will be located in the `dist` directory.
-
 #### Development
 - **Modify Code**: Scripts like `classify_pdf.py` and `PDFClassifier.py` are stubs or skeletons that can be further developed to add additional functionality such as PDF content classification.
 - **Add Features**: Implement features listed in `todo.txt` or enhance existing functionalities.
