@@ -100,12 +100,18 @@ class PDFCollection:
             pdf._reader = None
 
     def build_pdf(
-        self, output_path: str, page_numbers=True, y_padding=20, font_size=12
+        self,
+        output_path: str,
+        page_numbers=True,
+        y_padding=20,
+        font_size=12,
     ):
         writer = PdfWriter()
         current_page = 0
         bookmarks = []  # [(page_number, title),]
-        for pdf in self:
+        for i, pdf in enumerate(self):
+            progress = (i + 1) / len(self.files) * 70
+            yield progress  # Yield progress value
             for page in pdf.reader.pages:
                 writer.add_page(page)
                 current_page += 1
@@ -125,9 +131,15 @@ class PDFCollection:
                 writer.add_page(page)
                 current_page += 1
 
+        progress = 95
+        yield progress
+
         for page_number, title in bookmarks:
             writer.add_outline_item(title, page_number, parent=None)
 
         writer.write(output_path)
+
+        progress = 100
+        yield progress
 
         open_file(output_path)
