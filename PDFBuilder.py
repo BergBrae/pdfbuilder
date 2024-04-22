@@ -6,6 +6,7 @@ from PyPDF2 import PdfMerger, PdfReader
 import pickle as pkl
 from copy import deepcopy
 from glob import glob
+import ttkbootstrap as ttk
 
 from sorting import SortKeyDialog
 from PDFFile import PDFFile
@@ -18,6 +19,8 @@ def _exit(event=None):
 
 
 class PDFBuilder:
+    ttk.Style().theme_use("lumen")
+
     def __init__(self, root):
         self.root = root
         self.root.title("PDF Builder")
@@ -232,7 +235,7 @@ class PDFBuilder:
             lines.append(line)
 
         # Add "Add Page Numbers" option
-        add_page_numbers_var = tk.BooleanVar()
+        add_page_numbers_var = tk.BooleanVar(lines[0])
         add_page_numbers_check = tk.Checkbutton(
             new_window, text="Add Page Numbers", variable=add_page_numbers_var
         )
@@ -240,7 +243,7 @@ class PDFBuilder:
         add_page_numbers_check.pack(in_=lines[0])
 
         # Add "Padding" option
-        padding_var = tk.StringVar()
+        padding_var = tk.StringVar(lines[1])
         padding_var.set("20")  # Set default padding
         padding_label = tk.Label(new_window, text="Page Number Bottom Padding:")
         padding_label.pack(in_=lines[1], side=tk.LEFT)
@@ -250,7 +253,7 @@ class PDFBuilder:
         padding_entry.pack(in_=lines[1], side=tk.LEFT, padx=5)
 
         # Add "Font Size" option
-        font_size_var = tk.StringVar()
+        font_size_var = tk.StringVar(lines[2])
         font_size_var.set("10")  # Set default font size
         font_size_label = tk.Label(new_window, text="Font Size:")
         font_size_label.pack(in_=lines[2], side=tk.LEFT)
@@ -275,7 +278,6 @@ class PDFBuilder:
         new_window.focus_set()
 
     def export_pdf(self, window, add_page_numbers, y_padding, font_size):
-        window.destroy()
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         if output_path:
             try:
@@ -296,7 +298,7 @@ class PDFBuilder:
                 messagebox.showerror("Error", str(e))
                 raise e
 
-    def export_progress_window(self) -> ttk.Progressbar:
+    def export_progress_window(self):
         progress_window = Toplevel(self.root)
         progress_window.title("Building PDF")
         progress_window.geometry("300x50")
