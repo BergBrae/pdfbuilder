@@ -1,1 +1,1 @@
-Show progress when exporting?
+Fix export window layout
