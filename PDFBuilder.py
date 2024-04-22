@@ -46,7 +46,7 @@ class PDFBuilder:
         self.tree.bind("<Return>", self.edit_bookmark)
 
         self.style = ttk.Style()
-        self.style.theme_use("lumen")
+        self.style.theme_use("flatly")
 
     def create_toolbar(self):
         self.toolbar_frame = tk.Frame(self.root)
