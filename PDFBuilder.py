@@ -12,6 +12,7 @@ from sorting import SortKeyDialog
 from PDFFile import PDFFile
 from PDFCollection import PDFCollection
 from open_file import open_file
+from PDFSortKey import PDFSortKey
 
 
 def _exit(event=None):
@@ -28,8 +29,9 @@ class PDFBuilder:
 
         self.tree_items = set()
         self.num_files = 0
-        self.sorter = SortKeyDialog(self.root)
         self.pdfs = PDFCollection()
+
+        self.sorter = PDFSortKey(self.root)
 
         self.create_toolbar()
         self.create_treeview()
@@ -59,7 +61,7 @@ class PDFBuilder:
             ("Save", self.save_state),
             ("Add Files", self.add_files),
             ("Add Directory", self.add_directory),
-            ("Sort Key", self.sort_key),
+            ("Sort Key", self.sorter.open_dialog),
             # ("Settings", self.open_settings), # Not yet implemented
         ]
 
@@ -185,19 +187,6 @@ class PDFBuilder:
                 self.pdfs.add_file(PDFFile(file))
             self.update_tree()
 
-    def sort_key(self, event=None):
-        self.sort_dialog = SortKeyDialog(self.root)
-        self.sort_dialog.open_dialog()
-        self.root.wait_window(self.sort_dialog.dialog)
-        self.sorter._sort_key = self.sort_dialog.sort_key
-
-    def open_settings(self):
-        new_window = Toplevel(None)
-        new_window.title("Settings")
-        # save button
-        save_button = tk.Button(new_window, text="Save")
-        save_button.pack(side=tk.BOTTOM)
-
     def save_state(self):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdfbuilder")
         # readers cannot be pickled
@@ -217,9 +206,7 @@ class PDFBuilder:
         with open(input_path, "rb") as f:
             self.pdfs, sort_key = pkl.load(f)
 
-        with open("sort_key.txt", "w") as f:
-            for item in sort_key:
-                f.write("%s\n" % item)
+        self.sorter.sort_key = sort_key
 
         self.update_tree()
 

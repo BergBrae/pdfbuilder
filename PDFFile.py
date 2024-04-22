@@ -2,8 +2,6 @@ import os
 from PyPDF2 import PdfReader
 import re
 
-from PDFSortKey import PDFClassifier
-
 
 class PDFFile:
     def __init__(self, path: str, keep_open=True, check_exists=True):
@@ -62,6 +60,3 @@ class PDFFile:
             for page in self.reader.pages:
                 self._text.append(page.extract_text())
         return self._text
-
-    def classify(self):
-        self.classifications = PDFClassifier(self.text, self.filename_parts)

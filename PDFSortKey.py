@@ -13,6 +13,11 @@ class PDFSortKey:
 
         self.sort_key: list[PDFClassification] = [PDFClassification(regex="")]
 
+    def __iter__(self):
+        for key in self.sort_key:
+            if not key.is_empty():
+                yield key
+
     def open_dialog(self):
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
@@ -41,7 +46,7 @@ class PDFSortKey:
             containers[-1].pack(pady=5)
         self.dialog_frame.pack()
 
-        # add save key button and add key button
+        # add add key button
         container = tk.Frame(self.dialog)
         self.add_key_button = Button(container, text="Add Key", command=self.add_key)
         self.add_key_button.pack(side=tk.LEFT)

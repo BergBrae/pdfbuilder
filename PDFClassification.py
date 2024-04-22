@@ -1,5 +1,6 @@
 from tkinter import simpledialog, Text, Button, Toplevel
 import tkinter as tk
+import re
 
 
 class PDFClassification:
@@ -22,6 +23,17 @@ class PDFClassification:
         self.applies_to_document.set(applies_to_document)
         self.regex.set(regex)
         self.bookmark.set(bookmark)
+
+    def is_empty(self):
+        return not any(
+            [
+                self.applies_to_directory.get(),
+                self.applies_to_filename.get(),
+                self.applies_to_document.get(),
+                self.regex.get(),
+                self.bookmark.get(),
+            ]
+        )
 
     def to_frame(self, root: tk.Tk):
         frame = tk.Frame(root)
@@ -48,3 +60,18 @@ class PDFClassification:
         self.regex_entry.pack(side=tk.LEFT, padx=10)
 
         return frame
+
+    def applies_to(self, pdf) -> bool:
+        if self.applies_to_directory.get() and re.search(
+            self.regex.get(), pdf.directory, re.IGNORECASE
+        ):
+            return True
+        if self.applies_to_filename.get() and re.search(
+            self.regex.get(), pdf.filename, re.IGNORECASE
+        ):
+            return True
+        if self.applies_to_document.get() and re.search(
+            self.regex.get(), "\n\n".join(pdf.text), re.IGNORECASE
+        ):
+            return True
+        return False

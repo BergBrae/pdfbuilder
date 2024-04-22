@@ -8,6 +8,8 @@ from io import BytesIO
 from PDFFile import PDFFile
 from add_page_numers import add_page_number
 from open_file import open_file
+from PDFClassification import PDFClassification
+from PDFSortKey import PDFSortKey
 
 
 class PDFCollection:
@@ -60,11 +62,11 @@ class PDFCollection:
             if pdf.path == path:
                 return pdf
 
-    def sort(self, sort_key: list[str]):
+    def sort(self, sort_key: PDFSortKey):
         sorted_files = []
         for key in sort_key:
             for pdf in self.files:
-                if key in pdf.filename_parts and pdf not in sorted_files:
+                if key.applies_to(pdf) and pdf not in sorted_files:
                     sorted_files.append(pdf)
         not_matched = [pdf for pdf in self.files if pdf not in sorted_files]
         self.files = sorted_files + not_matched
