@@ -225,33 +225,40 @@ class PDFBuilder:
         new_window.title("Export Options")
         new_window.geometry("300x200")  # Set window size
 
+        # create a container for each line
+        lines = []
+        for _ in range(4):
+            line = tk.Frame(new_window)
+            line.pack(pady=10)  # fill=tk.X
+            lines.append(line)
+
         # Add "Add Page Numbers" option
         add_page_numbers_var = tk.BooleanVar()
         add_page_numbers_check = tk.Checkbutton(
             new_window, text="Add Page Numbers", variable=add_page_numbers_var
         )
         add_page_numbers_check.select()  # Set default to checked
-        add_page_numbers_check.pack()
+        add_page_numbers_check.pack(in_=lines[0])
 
         # Add "Padding" option
         padding_var = tk.StringVar()
         padding_var.set("20")  # Set default padding
         padding_label = tk.Label(new_window, text="Page Number Bottom Padding:")
-        padding_label.pack()
+        padding_label.pack(in_=lines[1], side=tk.LEFT)
         padding_entry = tk.Entry(
             new_window, textvariable=padding_var, width=2
         )  # Set the width of the entry widget
-        padding_entry.pack()
+        padding_entry.pack(in_=lines[1], side=tk.LEFT, padx=5)
 
         # Add "Font Size" option
         font_size_var = tk.StringVar()
         font_size_var.set("10")  # Set default font size
         font_size_label = tk.Label(new_window, text="Font Size:")
-        font_size_label.pack()
+        font_size_label.pack(in_=lines[2], side=tk.LEFT)
         font_size_entry = tk.Entry(
             new_window, textvariable=font_size_var, width=2
         )  # Set the width of the entry widget
-        font_size_entry.pack()
+        font_size_entry.pack(in_=lines[2], side=tk.LEFT, padx=5)
 
         # Add "Export" button
         export_button = tk.Button(
