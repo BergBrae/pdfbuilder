@@ -13,7 +13,6 @@ class PDFSortKey:
         self.sort_key: list[PDFClassification] = [PDFClassification(regex="")]
 
     def dialog_window(self):
-        self.save_temp()
         # clear dialog
         for widget in self.dialog.winfo_children():
             widget.destroy()
@@ -47,29 +46,9 @@ class PDFSortKey:
         frame.destroy()
         self.dialog_window()
 
-    def save_temp(self):
-        for sort_key in self.sort_key:
-            sort_key.save_state()
-
     def save(self):
-        new_sort_key = []
-        for sort_key in self.sort_key:
-            directory = sort_key.directory_var.get()
-            filename = sort_key.filename_var.get()
-            document = sort_key.document_var.get()
-            bookmark = sort_key.bookmark_var.get()
-            regex = sort_key.regex_var.get()
-            new_sort_key.append(
-                PDFClassification(
-                    regex=regex,
-                    applies_to_directory=directory,
-                    applies_to_filename=filename,
-                    applies_to_document=document,
-                    Bookmark=bookmark,
-                )
-            )
-        self.sort_key = new_sort_key
         self.dialog.destroy()
+        return self.sort_key
 
 
 if __name__ == "__main__":
