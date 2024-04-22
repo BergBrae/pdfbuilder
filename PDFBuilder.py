@@ -19,7 +19,6 @@ def _exit(event=None):
 
 
 class PDFBuilder:
-    ttk.Style().theme_use("lumen")
 
     def __init__(self, root):
         self.root = root
@@ -45,6 +44,9 @@ class PDFBuilder:
         self.root.bind("<Control-q>", _exit)
         self.root.bind("<Control-c>", self.clear_files)
         self.tree.bind("<Return>", self.edit_bookmark)
+
+        self.style = ttk.Style()
+        self.style.theme_use("lumen")
 
     def create_toolbar(self):
         self.toolbar_frame = tk.Frame(self.root)
