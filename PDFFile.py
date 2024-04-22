@@ -2,7 +2,7 @@ import os
 from PyPDF2 import PdfReader
 import re
 
-from PDFClassifier import PDFClassifier
+from PDFSortKey import PDFClassifier
 
 
 class PDFFile:
