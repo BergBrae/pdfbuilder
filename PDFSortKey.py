@@ -33,7 +33,7 @@ class PDFSortKey:
             )
             delete_key.pack(side=tk.RIGHT)
             containers.append(frame)
-            containers[-1].pack(pady=5, side=tk.BOTTOM)
+            containers[-1].pack(pady=5)
         self.dialog_frame.pack()
 
         # add save key button and add key button
