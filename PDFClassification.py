@@ -39,12 +39,12 @@ class PDFClassification:
         self.document_checkbox = tk.Checkbutton(
             frame, text="Document", variable=self.applies_to_document
         )
-        self.document_checkbox.pack(side=tk.LEFT)
+        self.document_checkbox.pack(side=tk.LEFT, padx=10)
 
         self.bookmark_entry = tk.Entry(frame, textvariable=self.bookmark)
         self.bookmark_entry.pack(side=tk.LEFT)
 
         self.regex_entry = tk.Entry(frame, textvariable=self.regex)
-        self.regex_entry.pack(side=tk.LEFT)
+        self.regex_entry.pack(side=tk.LEFT, padx=10)
 
         return frame

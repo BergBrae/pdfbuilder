@@ -18,7 +18,14 @@ class PDFSortKey:
             widget.destroy()
 
         self.dialog_frame = tk.Frame(self.dialog)
-        containers = []
+
+        header_text = (
+            f"Applies to: {' '*64} Bookmark Title: {' '*15} Regex Expression: {' '*25}"
+        )
+
+        containers = [tk.Label(self.dialog_frame, text=header_text)]
+        # pack with left justified
+        containers[0].pack()
         for i, key in enumerate(self.sort_key):
             frame = key.to_frame(self.dialog_frame)
             delete_key = Button(
@@ -26,7 +33,7 @@ class PDFSortKey:
             )
             delete_key.pack(side=tk.RIGHT)
             containers.append(frame)
-            containers[-1].pack(pady=5)
+            containers[-1].pack(pady=5, side=tk.BOTTOM)
         self.dialog_frame.pack()
 
         # add save key button and add key button
