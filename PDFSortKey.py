@@ -9,10 +9,15 @@ class PDFSortKey:
         self.root = root
         self.dialog = Toplevel(self.root)
         self.dialog.title("Sort Key")
+        self.dialog.destroy()
 
         self.sort_key: list[PDFClassification] = [PDFClassification(regex="")]
 
-    def dialog_window(self):
+    def open_dialog(self):
+        if not self.dialog.winfo_exists():
+            self.dialog = Toplevel(self.root)
+            self.dialog.title("Sort Key")
+
         # clear dialog
         for widget in self.dialog.winfo_children():
             widget.destroy()
@@ -38,29 +43,23 @@ class PDFSortKey:
 
         # add save key button and add key button
         container = tk.Frame(self.dialog)
-        self.save_button = Button(container, text="Save", command=self.save)
         self.add_key_button = Button(container, text="Add Key", command=self.add_key)
-        self.save_button.pack(side=tk.LEFT)
         self.add_key_button.pack(side=tk.LEFT)
         container.pack()
 
     def add_key(self):
         self.sort_key.append(PDFClassification())
-        self.dialog_window()
+        self.open_dialog()
 
     def delete_key(self, i, frame):
         self.sort_key.pop(i)
         frame.destroy()
-        self.dialog_window()
-
-    def save(self):
-        self.dialog.destroy()
-        return self.sort_key
+        self.open_dialog()
 
 
 if __name__ == "__main__":
     root = tk.Tk()
     pdf_sort_key = PDFSortKey(root)
-    open_button = Button(root, text="Open", command=pdf_sort_key.dialog_window)
+    open_button = Button(root, text="Open", command=pdf_sort_key.open_dialog)
     open_button.pack()
     root.mainloop()
