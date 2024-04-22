@@ -5,6 +5,7 @@ import json
 from PyPDF2 import PdfMerger, PdfReader
 import pickle as pkl
 from copy import deepcopy
+from glob import glob
 
 from sorting import SortKeyDialog
 from PDFFile import PDFFile
@@ -171,14 +172,11 @@ class PDFBuilder:
     def add_directory(self, event=None):
         directory = filedialog.askdirectory()
         if directory:
-            pdf_files = []
-            for root, dirs, files in os.walk(directory):
-                for file in files:
-                    if file.lower().endswith(".pdf"):
-                        pdf_files.append(os.path.join(root, file))
+            pdf_files = glob(
+                os.path.join(directory, "**/*.pdf"), recursive=True
+            ) + glob(os.path.join(directory, "**/*.PDF"), recursive=True)
             for file in pdf_files:
-                full_path = os.path.join(directory, file)
-                self.pdfs.add_file(PDFFile(full_path))
+                self.pdfs.add_file(PDFFile(file))
             self.update_tree()
 
     def sort_key(self, event=None):
