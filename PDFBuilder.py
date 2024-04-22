@@ -283,7 +283,7 @@ class PDFBuilder:
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         if output_path:
             try:
-                progress_object, window = self.export_progress_window()
+                progress_object, progress_window = self.export_progress_window()
                 for progress in self.pdfs.build_pdf(
                     output_path=output_path,
                     page_numbers=add_page_numbers,
