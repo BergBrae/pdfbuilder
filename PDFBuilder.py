@@ -109,11 +109,12 @@ class PDFBuilder:
             def save_edit(event):
                 try:
                     filepath = self.tree.item(row_id).get("values")[1]
-                except Exception as e:
                     pdf = self.pdfs.get_file_by_path(filepath)
                     self.pdfs.bookmarks[pdf] = entry.get()
                     entry.destroy()
                     self.update_tree()
+                except Exception as e:
+                    raise e
                 finally:
                     entry.destroy()
                     self.root.bind("<BackSpace>", self.remove_selected)
