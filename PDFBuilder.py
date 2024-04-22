@@ -102,13 +102,20 @@ class PDFBuilder:
             entry.place(x=x, y=y + pady, anchor="w")
             # set focus and selection
             entry.focus_set()
+            # unbind double click to prevent re-entry
+            self.root.unbind("<BackSpace>")
 
             def save_edit(event):
-                filepath = self.tree.item(row_id)["values"][1]
-                pdf = self.pdfs.get_file_by_path(filepath)
-                self.pdfs.bookmarks[pdf] = entry.get()
-                entry.destroy()
-                self.update_tree()
+                try:
+                    filepath = self.tree.item(row_id).get("values")[1]
+                except Exception as e:
+                    pdf = self.pdfs.get_file_by_path(filepath)
+                    self.pdfs.bookmarks[pdf] = entry.get()
+                    entry.destroy()
+                    self.update_tree()
+                finally:
+                    entry.destroy()
+                    self.root.bind("<BackSpace>", self.remove_selected)
 
             entry.bind("<Return>", save_edit)
             entry.bind("<FocusOut>", save_edit)
