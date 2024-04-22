@@ -294,6 +294,7 @@ class PDFBuilder:
                     progress_object.update()
 
                 window.destroy()
+                progress_window.destroy()
 
                 messagebox.showinfo("PDF Builder", "PDF has been built successfully.")
             except Exception as e:
