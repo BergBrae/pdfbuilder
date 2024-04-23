@@ -184,7 +184,10 @@ class PDFBuilder:
                 os.path.join(directory, "**/*.pdf"), recursive=True
             ) + glob(os.path.join(directory, "**/*.PDF"), recursive=True)
             for file in pdf_files:
-                self.pdfs.add_file(PDFFile(file))
+                try:
+                    self.pdfs.add_file(PDFFile(file))
+                except Exception as e:
+                    print(f"Error adding file: {file}")
             self.update_tree()
 
     def save_state(self):
