@@ -38,7 +38,7 @@ class PDFBuilder:
         self.create_bottom_buttons()
         self.create_status_bar()
         self.root.bind("<Control-b>", self.build_pdf)
-        self.root.bind("<Control-s>", self.sorter.open_dialog)
+        self.root.bind("<Control-s>", self.open_sort_dialog)
         self.root.bind("<Control-d>", self.add_directory)
         self.root.bind("<Control-Shift-S>", self.auto_sort)
         self.root.bind("<BackSpace>", self.remove_selected)
@@ -60,7 +60,7 @@ class PDFBuilder:
             ("Save", self.save_state),
             ("Add Files", self.add_files),
             ("Add Directory", self.add_directory),
-            ("Sort Key", self.sorter.open_dialog),
+            ("Sort Key", self.open_sort_dialog),
             # ("Settings", self.open_settings), # Not yet implemented
         ]
 
@@ -214,7 +214,6 @@ class PDFBuilder:
         sort_key = data["sort_key"]
 
         self.pdfs = PDFCollection.from_dict(pdf_collection)
-        del self.sorter
         self.sorter = PDFSortKey.from_dict(sort_key, self.root)
 
         self.update_tree()
@@ -304,6 +303,9 @@ class PDFBuilder:
         progress = ttk.Progressbar(progress_window, length=200, mode="determinate")
         progress.pack()
         return progress, progress_window
+
+    def open_sort_dialog(self):
+        self.sorter.open_dialog()
 
     def auto_sort(self, event=None):
         not_matched = self.pdfs.sort(self.sorter.sort_key)
