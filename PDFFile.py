@@ -9,6 +9,7 @@ class PDFFile:
             raise FileNotFoundError(f"The file '{path}' does not exist.")
         self.path = os.path.normpath(path)
         self.filename = os.path.basename(path)
+        self.directory = os.path.dirname(path)
 
         filename_without_extension, _ = os.path.splitext(self.filename)
         filename_parts: list[str] = re.split(r"[\s_.-]+", filename_without_extension)
