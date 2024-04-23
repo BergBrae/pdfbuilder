@@ -18,7 +18,7 @@ class PDFSortKey:
             if not key.is_empty():
                 yield key
 
-    def open_dialog(self):
+    def open_dialog(self, event=None):
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
             self.dialog.title("Sort Key")
@@ -62,6 +62,15 @@ class PDFSortKey:
         self.sort_key.pop(i)
         frame.destroy()
         self.open_dialog()
+
+    def to_dict(self):
+        return [key.to_dict() for key in self.sort_key]
+
+    @classmethod
+    def from_dict(cls, data: list[dict], root):
+        sort_key = cls(root)
+        sort_key.sort_key = [PDFClassification.from_dict(d) for d in data]
+        return sort_key
 
 
 if __name__ == "__main__":

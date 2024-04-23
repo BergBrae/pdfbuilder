@@ -61,3 +61,24 @@ class PDFFile:
             for page in self.reader.pages:
                 self._text.append(page.extract_text())
         return self._text
+
+    def to_dict(self):
+
+        return {
+            "filename": self.filename,
+            "path": self.path,
+            "directory": self.directory,
+            "filename_parts": self.filename_parts,
+            "num_pages": self.num_pages,
+            "text": self.text if self._text is not None else None,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        pdf = cls(data["path"], check_exists=False)
+        pdf.filename = data["filename"]
+        pdf.directory = data["directory"]
+        pdf.filename_parts = data["filename_parts"]
+        pdf._num_pages = data["num_pages"]
+        pdf._text = data["text"]
+        return pdf

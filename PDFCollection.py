@@ -153,3 +153,20 @@ class PDFCollection:
         yield progress
 
         open_file(output_path)
+
+    def to_dict(self):
+        return {
+            "files": [pdf.to_dict() for pdf in self],
+            "bookmarks": {pdf.path: title for pdf, title in self.bookmarks.items()},
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict):
+        pdf_collection = cls()
+        for pdf_data in data["files"]:
+            pdf = PDFFile.from_dict(pdf_data)
+            pdf_collection.add_file(pdf)
+        for path, title in data["bookmarks"].items():
+            pdf = pdf_collection.get_file_by_path(path)
+            pdf_collection.add_bookmark(pdf, title)
+        return pdf_collection

@@ -8,7 +8,6 @@ from copy import deepcopy
 from glob import glob
 import ttkbootstrap as ttk
 
-from sorting import SortKeyDialog
 from PDFFile import PDFFile
 from PDFCollection import PDFCollection
 from open_file import open_file
@@ -191,25 +190,32 @@ class PDFBuilder:
             self.update_tree()
 
     def save_state(self):
-        output_path = filedialog.asksaveasfilename(defaultextension=".pdfbuilder")
+        output_path = filedialog.asksaveasfilename(defaultextension=".pdfbuilder.json")
         # readers cannot be pickled
         self.pdfs.clear_readers()
         to_save = (self.pdfs, self.sorter.sort_key)
 
         if output_path:
-            with open(output_path, "wb") as f:
-                pkl.dump(to_save, f)
+            pdf_collection = self.pdfs.to_dict()
+            sort_key = self.sorter.to_dict()
+            to_save = json.dumps({"pdfs": pdf_collection, "sort_key": sort_key})
+            with open(output_path, "w") as f:
+                f.write(to_save)
             messagebox.showinfo("PDF Builder", "State has been saved successfully.")
 
     def load_state(self):
         input_path = filedialog.askopenfilename(
-            filetypes=[("PDF Builder Saves", "*.pdfbuilder")]
+            filetypes=[("PDF Builder Saves", "*.pdfbuilder.json")]
         )
 
-        with open(input_path, "rb") as f:
-            self.pdfs, sort_key = pkl.load(f)
+        with open(input_path, "r") as f:
+            data = json.load(f)
+        pdf_collection = data["pdfs"]
+        sort_key = data["sort_key"]
 
-        self.sorter.sort_key = sort_key
+        self.pdfs = PDFCollection.from_dict(pdf_collection)
+        del self.sorter
+        self.sorter = PDFSortKey.from_dict(sort_key, self.root)
 
         self.update_tree()
 

@@ -76,3 +76,22 @@ class PDFClassification:
             if document_result:
                 return document_result
         return None
+
+    def to_dict(self):
+        return {
+            "applies_to_directory": self.applies_to_directory.get(),
+            "applies_to_filename": self.applies_to_filename.get(),
+            "applies_to_document": self.applies_to_document.get(),
+            "regex": self.regex.get(),
+            "bookmark": self.bookmark.get(),
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            data["regex"],
+            data["applies_to_directory"],
+            data["applies_to_filename"],
+            data["applies_to_document"],
+            data["bookmark"],
+        )
