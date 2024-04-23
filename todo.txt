@@ -1,8 +1,0 @@
-Implement regex for classification
-Plan:
-    Transition sort_key and sort queries to classifications
-    Data Needed:
-        Order of elements and corresponding regex
-            Specified as an interactive dialog
-
-        Regex in filename and doc?
