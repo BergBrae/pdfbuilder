@@ -30,7 +30,7 @@ class RegexGenerator:
             ],
         )
         response = response["message"]["content"]
-        re_pattern = "[^`^].+[^`$]"
+        re_pattern = "[^`^(python)]*(.+)[^`$]*"
         match = re.search(re_pattern, response)
         return match.group()
 
