@@ -23,6 +23,8 @@ class PDFSortKey:
             self.dialog = Toplevel(self.root)
             self.dialog.title("Sort Key")
 
+        self.dialog.focus_set()
+
         # clear dialog
         for widget in self.dialog.winfo_children():
             widget.destroy()

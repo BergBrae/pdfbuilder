@@ -64,10 +64,18 @@ class PDFCollection:
 
     def sort(self, sort_key: PDFSortKey):
         sorted_files = []
-        for key in sort_key:
+        for classification in sort_key:
             for pdf in self.files:
-                if key.applies_to(pdf) and pdf not in sorted_files:
+                match = classification.applies_to(pdf)
+                if match and pdf not in sorted_files:
                     sorted_files.append(pdf)
+
+                    bookmark = classification.bookmark.get().strip()
+                    if bookmark:
+                        for i, group in enumerate(match.groups(), start=1):
+                            bookmark = bookmark.replace(f"\\{i}", group)
+                        self.bookmarks[pdf] = bookmark
+
         not_matched = [pdf for pdf in self.files if pdf not in sorted_files]
         self.files = sorted_files + not_matched
         return not_matched
