@@ -71,7 +71,8 @@ class PDFClassification:
             if filename_result:
                 return filename_result
         if self.applies_to_document.get():
-            document_result = re.search(self.regex.get(), pdf.text, re.IGNORECASE)
+            pdf_text = "\n\n".join(pdf.text)
+            document_result = re.search(self.regex.get(), pdf_text, re.IGNORECASE)
             if document_result:
                 return document_result
         return None
