@@ -14,7 +14,7 @@ def add_page_number(input_pdf_bytes, y_padding=20, font_size=12):
     for page_num in range(total_num_pages):
         page = pdf.pages[page_num]
         rotation = page.get("/Rotate") if page.get("/Rotate") else 0
-        page_width, page_height = page.mediabox[2], page.mediabox[3]
+        page_width, page_height = float(page.mediabox[2]), float(page.mediabox[3])
         str_to_show = f"Page {page_num + 1} of {total_num_pages}"
         text_width = can.stringWidth(str_to_show, font, font_size)
         can.setPageSize((page_width, page_height))
