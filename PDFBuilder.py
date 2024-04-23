@@ -71,30 +71,28 @@ class PDFBuilder:
     def create_treeview(self):
         self.tree = ttk.Treeview(
             self.root,
-            columns=("File Name", "Path", "Sort Queries", "Bookmark"),
+            columns=("File Name", "Path", "Bookmark"),
             show="headings",
         )
         self.tree.heading("File Name", text="File Name")
         self.tree.heading("Path", text="Path")
-        self.tree.heading("Sort Queries", text="Sort Queries")
         self.tree.heading("Bookmark", text="Bookmark")
         self.tree.column("File Name", width=200)
         self.tree.column("Path", width=200)
-        self.tree.column("Sort Queries", width=200)
         self.tree.column("Bookmark", width=200)
         self.tree.bind("<Double-1>", self.double_click)
         self.tree.pack(expand=True, fill=tk.BOTH, side=tk.LEFT)
 
     def double_click(self, event):
         column = self.tree.identify_column(event.x)
-        if column == "#4":
+        if column == "#3":
             self.edit_bookmark(event)
         else:
             self.open_file(event)
 
     def edit_bookmark(self, event):
         row_id = self.tree.focus()
-        column = "#4"
+        column = "#3"
         column_idx = int(column[1]) - 1
 
         # We only want to edit if we're on an item
