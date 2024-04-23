@@ -35,7 +35,7 @@ class PDFFile:
 
     @property
     def values(self):
-        return (self.filename, self.path, self.filename_parts)
+        return (self.filename, self.path)
 
     @property
     def reader(self):
@@ -69,7 +69,7 @@ class PDFFile:
             "path": self.path,
             "directory": self.directory,
             "filename_parts": self.filename_parts,
-            "num_pages": self.num_pages,
+            "num_pages": self.num_pages if self._num_pages is not None else None,
             "text": self.text if self._text is not None else None,
         }
 
