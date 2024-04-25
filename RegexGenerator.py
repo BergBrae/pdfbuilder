@@ -30,9 +30,11 @@ class RegexGenerator:
             ],
         )
         response = response["message"]["content"]
-        re_pattern = "[^`^(python)]*(.+)[^`$]*"
-        match = re.search(re_pattern, response)
-        return match.group()
+        print(response)
+        regex_expression = re.sub(
+            "`?(?:\\^|\\^?(?:regex|python))?\\s*([^`$]+)[\\s`$]*", r"\1", response
+        )
+        return regex_expression
 
     def open_dialog(self, event=None):
         if not self.dialog.winfo_exists():
