@@ -3,3 +3,4 @@ tk
 reportlab
 ttkbootstrap
 ollama
+pycryptodome

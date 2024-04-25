@@ -17,6 +17,7 @@ class PDFCollection:
         self.files = []
         self.bookmarks = {}  # {PDFFile: bookmark_title: str}
         self.num_files = 0
+        self.failed_files = set()
 
     def __len__(self):
         return self.num_files
@@ -26,6 +27,14 @@ class PDFCollection:
 
     def __iter__(self):
         return iter(self.files)
+
+    def failed_open(self, pdf: PDFFile):
+        # text = pdf.text  # Will open file if not already opened
+        if pdf in self and pdf.opened_successfully is False:
+            self.failed_files.add(pdf)
+            self.remove_file(pdf)
+            return True
+        return False
 
     def add_bookmark(self, pdf: PDFFile, title: str):
         if title:
@@ -67,15 +76,15 @@ class PDFCollection:
         for classification in sort_key:
             for pdf in self.files:
                 match = classification.applies_to(pdf)
-                if match and pdf not in sorted_files:
-                    sorted_files.append(pdf)
+                if not self.failed_open(pdf):
+                    if match and pdf not in sorted_files:
+                        sorted_files.append(pdf)
 
-                    bookmark = classification.bookmark.get().strip()
-                    if bookmark:
-                        for i, group in enumerate(match.groups(), start=1):
-                            bookmark = bookmark.replace(f"\\{i}", group)
-                        self.bookmarks[pdf] = bookmark
-
+                        bookmark = classification.bookmark.get().strip()
+                        if bookmark:
+                            for i, group in enumerate(match.groups(), start=1):
+                                bookmark = bookmark.replace(f"\\{i}", group)
+                            self.bookmarks[pdf] = bookmark
         not_matched = [pdf for pdf in self.files if pdf not in sorted_files]
         self.files = sorted_files + not_matched
         return not_matched
@@ -120,6 +129,9 @@ class PDFCollection:
         current_page = 0
         bookmarks = []  # [(page_number, title),]
         for i, pdf in enumerate(self):
+            pdf.text  # will open file if not already opened
+            if self.failed_open(pdf):
+                continue
             progress = (i + 1) / len(self.files) * 70
             yield progress  # Yield progress value
             for page in pdf.reader.pages:
