@@ -3,7 +3,7 @@ import tkinter as tk
 import ollama
 import re
 
-modelname = "phi3"
+modelname = "llama3"
 
 
 class RegexGenerator:
@@ -19,7 +19,7 @@ class RegexGenerator:
             ollama.pull(modelname)
 
     def nl_to_regex(self, nat_lang_str: str, event=None):
-        message = f"You generate python compatible regular expressions that are directly used from within python. Your responses are 100% a python regex. Do not output anything that is not a regex string. Do not use code blocks or '`'. The expression to match is: {nat_lang_str}"
+        message = f"You generate python compatible regular expressions that are directly used from within python. Your responses are 100% a python regex. Do not output anything that is not a regex string. DO NOT write an explanation. Do not use code blocks or '`'. Use ( and ) to capture parts that the user requests. The expression to match is: {nat_lang_str}"
         response = ollama.chat(
             model=modelname,
             messages=[
@@ -32,11 +32,13 @@ class RegexGenerator:
         response = response["message"]["content"]
         print(response)
         regex_expression = re.sub(
-            "`?(?:\\^|\\^?(?:regex|python))?\\s*([^`$]+)[\\s`$]*", r"\1", response
+            "`*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$]*", r"\1", response
         )
         return regex_expression
 
-    def open_dialog(self, event=None):
+    def open_dialog(self, insert_into, event=None):
+        self.insert_into = insert_into
+
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
             self.dialog.title("Regex Generator")
@@ -80,6 +82,8 @@ class RegexGenerator:
 
     def accept(self):
         self.dialog.destroy()
+        if self.insert_into:
+            self.insert_into.insert(tk.END, self.output_str)
         return self.output_str
 
 
