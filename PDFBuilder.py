@@ -29,6 +29,7 @@ class PDFBuilder:
         self.tree_items = set()
         self.num_files = 0
         self.pdfs = PDFCollection()
+        self.alerted_failed_files = set()
 
         self.sorter = PDFSortKey(self.root)
 
@@ -273,14 +274,15 @@ class PDFBuilder:
         new_window.focus_set()
 
     def alert_failed_files(self):
-        failed_files = [
-            f"{pdf.filename}: {pdf.error}" for pdf in self.pdfs.failed_files
-        ]
+        to_alert = self.pdfs.failed_files - self.alerted_failed_files
+        failed_files = [f"{pdf.filename}: {pdf.error}" for pdf in to_alert]
         if failed_files:
-            failed_files = "\n".join(failed_files)
+            num_failed = len(failed_files)
+            failed_files = "\n\n".join(failed_files)
+            self.alerted_failed_files = self.alerted_failed_files.union(to_alert)
             messagebox.showinfo(
                 "PDF Builder",
-                f"The following files were removed because they failed to open:\n\n{failed_files}",
+                f"The following {num_failed} files were removed because they failed to open:\n\n{failed_files}",
             )
 
     def export_pdf(self, window, add_page_numbers, y_padding, font_size):

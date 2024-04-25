@@ -29,11 +29,11 @@ class PDFCollection:
         return iter(self.files)
 
     def failed_open(self, pdf: PDFFile):
-        # text = pdf.text  # Will open file if not already opened
-        if pdf in self and pdf.opened_successfully is False:
+        if pdf.opened_successfully is None:
+            return None
+        if pdf.opened_successfully is False:
             self.failed_files.add(pdf)
-            self.remove_file(pdf)
-            return True
+            return pdf  # returned pdf so that it can be removed from self.files outside of a loop iterating over self.files
         return False
 
     def add_bookmark(self, pdf: PDFFile, title: str):
@@ -50,9 +50,10 @@ class PDFCollection:
             self.num_files += 1
 
     def remove_file(self, pdf: PDFFile):
-        self.files.remove(pdf)
-        self.num_files -= 1
-        self.remove_bookmark(pdf)
+        if pdf in self:
+            self.files.remove(pdf)
+            self.num_files -= 1
+            self.remove_bookmark(pdf)
 
     def remove_by_path(self, path: str):
         for pdf in self.files:
@@ -73,10 +74,16 @@ class PDFCollection:
 
     def sort(self, sort_key: PDFSortKey):
         sorted_files = []
+        files_to_remove = []
         for classification in sort_key:
             for pdf in self.files:
                 match = classification.applies_to(pdf)
-                if not self.failed_open(pdf):
+                pdf_or_failed = self.failed_open(
+                    pdf
+                )  # PDFFile when faield, False when not failed
+                if (
+                    pdf_or_failed is False
+                ):  # self.failed_open removes the files from self.files and adds it to self.failed_files
                     if match and pdf not in sorted_files:
                         sorted_files.append(pdf)
 
@@ -85,6 +92,11 @@ class PDFCollection:
                             for i, group in enumerate(match.groups(), start=1):
                                 bookmark = bookmark.replace(f"\\{i}", group)
                             self.bookmarks[pdf] = bookmark
+                elif isinstance(pdf_or_failed, PDFFile):
+                    files_to_remove.append(pdf_or_failed)
+
+        for pdf in files_to_remove:
+            self.remove_file(pdf)
         not_matched = [pdf for pdf in self.files if pdf not in sorted_files]
         self.files = sorted_files + not_matched
         return not_matched
@@ -128,9 +140,14 @@ class PDFCollection:
         writer = PdfWriter()
         current_page = 0
         bookmarks = []  # [(page_number, title),]
+        files_to_remove = []
         for i, pdf in enumerate(self):
             pdf.text  # will open file if not already opened
-            if self.failed_open(pdf):
+            pdf_or_failed = self.failed_open(pdf)
+            if isinstance(
+                pdf_or_failed, PDFFile
+            ):  # Issue: failed_open changes self.files
+                files_to_remove.append(pdf_or_failed)
                 continue
             progress = (i + 1) / len(self.files) * 70
             yield progress  # Yield progress value
@@ -158,6 +175,9 @@ class PDFCollection:
 
         for page_number, title in bookmarks:
             writer.add_outline_item(title, page_number, parent=None)
+
+        for file in files_to_remove:
+            self.remove_file(file)
 
         writer.write(output_path)
 
