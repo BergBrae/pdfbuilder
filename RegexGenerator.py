@@ -2,8 +2,14 @@ from tkinter import simpledialog, Text, Button, Toplevel
 import tkinter as tk
 import ollama
 import re
+import webbrowser
 
-modelname = "codellama"
+
+def open_link(url):
+    webbrowser.open_new(url)
+
+
+modelname = "phi3"
 
 
 class RegexGenerator:
@@ -32,7 +38,7 @@ class RegexGenerator:
         response = response["message"]["content"]
         print(response)
         regex_expression = re.sub(
-            "[`r\"'\n\r]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
+            "[`r\"'\n\r\\s]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
             r"\1",
             response,
         )  # clean the expression of code blocks, quotes etc.
@@ -43,6 +49,7 @@ class RegexGenerator:
 
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
+            self.dialog.geometry("400x250")
             self.dialog.title("Regex Generator")
 
         self.dialog.focus_set()
@@ -65,9 +72,20 @@ class RegexGenerator:
             self.dialog_frame, text="Submit", command=self.submit
         )
         self.submit_button.pack(pady=10)
+        self.submit_button.bind("<Control-Return>", self.submit)
 
         self.output = Text(self.dialog_frame, height=1, width=50)
         self.output.pack()
+
+        self.help_link = tk.Label(
+            self.dialog_frame,
+            text="You can test the regex here",
+            fg="blue",
+            cursor="hand2",
+            underline=True,
+        )
+        self.help_link.bind("<Button-1>", lambda e: open_link("https://regex101.com/"))
+        self.help_link.pack()
 
         self.accept_button = Button(
             self.dialog_frame, text="Accept", command=self.accept

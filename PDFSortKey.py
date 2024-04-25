@@ -23,6 +23,7 @@ class PDFSortKey:
     def open_dialog(self, event=None):
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
+            self.dialog.geometry("700x300")
             self.dialog.title("Sort Key")
 
         self.dialog.focus_set()
