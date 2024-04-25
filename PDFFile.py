@@ -19,6 +19,8 @@ class PDFFile:
         self._reader = None
         self._num_pages = None
         self.keep_open = keep_open
+        self.opened_successfully = None
+        self.error = None
 
         self._text: list[str] = None
 
@@ -40,28 +42,41 @@ class PDFFile:
 
     @property
     def reader(self):
-        if self._reader is None:
-            if self.keep_open:
-                self._reader = PdfReader(open(self.path, "rb"), strict=False)
-                return self._reader
-            else:
-                return PdfReader(open(self.path, "rb"), strict=False)
-        return self._reader
+        try:
+            if self._reader is None:
+                if self.keep_open:
+                    self._reader = PdfReader(open(self.path, "rb"), strict=False)
+                    self.opened_successfully = True
+                    return self._reader
+                else:
+                    reader = PdfReader(open(self.path, "rb"), strict=False)
+                    self.opened_successfully = True
+                    return reader
+            return self._reader
+        except Exception as e:
+            self.opened_successfully = False
+            self.error = e
+            return None
 
     @property
     def num_pages(self):
-        if self._num_pages is None:
+        reader = self.reader
+        if reader and self._num_pages is None:
             self._num_pages = len(self.reader.pages)
 
         return self._num_pages
 
     @property
     def text(self) -> list[str]:
-        if self._text is None:
-            self._text = []
-            for page in self.reader.pages:
-                self._text.append(page.extract_text())
-        return self._text
+        reader = self.reader
+        if reader is not None:
+            if self._text is None:
+                self._text = []
+                for page in self.reader.pages:
+                    self._text.append(page.extract_text())
+            return self._text
+        else:
+            return []
 
     def classify(self):
         self.classifications = PDFClassifier(self.text, self.filename_parts)

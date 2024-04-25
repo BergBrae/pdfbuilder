@@ -279,6 +279,17 @@ class PDFBuilder:
         new_window.bind("<Return>", lambda e: export_button.invoke())
         new_window.focus_set()
 
+    def alert_failed_files(self):
+        failed_files = [
+            f"{pdf.filename}: {pdf.error}" for pdf in self.pdfs.failed_files
+        ]
+        if failed_files:
+            failed_files = "\n".join(failed_files)
+            messagebox.showinfo(
+                "PDF Builder",
+                f"The following files were removed because they failed to open:\n\n{failed_files}",
+            )
+
     def export_pdf(self, window, add_page_numbers, y_padding, font_size):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         if output_path:
@@ -293,9 +304,12 @@ class PDFBuilder:
                     progress_object["value"] = progress
                     progress_object.update()
 
+                self.update_tree()
+
                 window.destroy()
                 progress_window.destroy()
 
+                self.alert_failed_files()
                 messagebox.showinfo("PDF Builder", "PDF has been built successfully.")
             except Exception as e:
                 messagebox.showerror("Error", str(e))
@@ -312,6 +326,7 @@ class PDFBuilder:
     def auto_sort(self, event=None):
         not_matched = self.pdfs.sort(self.sorter.sort_key)
         self.update_tree()
+        self.alert_failed_files()
         num_not_matched = len(not_matched)
 
         # Highlight and notify of files that did not match the sort key
