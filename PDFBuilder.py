@@ -47,6 +47,9 @@ class PDFBuilder:
         self.root.bind("<Control-c>", self.clear_files)
         self.tree.bind("<Return>", self.edit_bookmark)
         self.tree.bind("<Button-3>", self.show_file_text)
+        self.tree.bind(
+            "<Control-a>", lambda e: self.tree.selection_set(self.tree.get_children())
+        )
 
         self.style = ttk.Style()
         self.style.theme_use("flatly")
@@ -63,7 +66,8 @@ class PDFBuilder:
             ("Add Files", self.add_files),
             ("Add Directory", self.add_directory),
             ("Sort Key", self.open_sort_dialog),
-            # ("Settings", self.open_settings), # Not yet implemented
+            ("Remove Selected Bookmarks", self.remove_selected_bookmarks),
+            ("Show File Contents", self.show_file_text),
         ]
 
         for button_text, command in toolbar_buttons:
@@ -176,9 +180,20 @@ class PDFBuilder:
             self.pdfs.remove_by_path(filepath)
         self.update_tree()
 
-    def show_file_text(self, event):
-        item = self.tree.identify_row(event.y)
-        if item:
+    def remove_selected_bookmarks(self, event=None):
+        selected_items = self.tree.selection()
+        for item in selected_items:
+            filepath = self.tree.item(item)["values"][1]
+            pdf = self.pdfs.get_file_by_path(filepath)
+            self.pdfs.bookmarks[pdf] = ""
+        self.update_tree()
+
+    def show_file_text(self, event=None):
+        if event is None:
+            items = self.tree.selection()
+        else:
+            items = [self.tree.identify_row(event.y)]
+        for item in items:
             filepath = self.tree.item(item)["values"][1]
             pdf = self.pdfs.get_file_by_path(filepath)
             text = "\n\n".join(pdf.text)
