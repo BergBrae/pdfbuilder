@@ -46,6 +46,7 @@ class PDFBuilder:
         self.root.bind("<Control-q>", _exit)
         self.root.bind("<Control-c>", self.clear_files)
         self.tree.bind("<Return>", self.edit_bookmark)
+        self.tree.bind("<Button-3>", self.show_file_text)
 
         self.style = ttk.Style()
         self.style.theme_use("flatly")
@@ -174,6 +175,19 @@ class PDFBuilder:
             filepath = self.tree.item(item)["values"][1]
             self.pdfs.remove_by_path(filepath)
         self.update_tree()
+
+    def show_file_text(self, event):
+        item = self.tree.identify_row(event.y)
+        if item:
+            filepath = self.tree.item(item)["values"][1]
+            pdf = self.pdfs.get_file_by_path(filepath)
+            text = "\n\n".join(pdf.text)
+            text_window = Toplevel(self.root)
+            text_window.title(pdf.filename)
+            text_window.geometry("800x600")
+            text_widget = tk.Text(text_window)
+            text_widget.insert(tk.END, text)
+            text_widget.pack(expand=True, fill=tk.BOTH)
 
     def add_directory(self, event=None):
         directory = filedialog.askdirectory()
