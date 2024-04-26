@@ -62,17 +62,18 @@ class PDFClassification:
         return frame
 
     def applies_to(self, pdf) -> bool:
+        expression = re.compile(self.regex.get(), re.IGNORECASE)
         if self.applies_to_directory.get():
-            directory_result = re.search(self.regex.get(), pdf.path, re.IGNORECASE)
+            directory_result = re.search(expression, pdf.path)
             if directory_result:
                 return directory_result
         if self.applies_to_filename.get():
-            filename_result = re.search(self.regex.get(), pdf.filename, re.IGNORECASE)
+            filename_result = re.search(expression, pdf.filename)
             if filename_result:
                 return filename_result
         if self.applies_to_document.get():
             pdf_text = "\n\n".join(pdf.text)
-            document_result = re.search(self.regex.get(), pdf_text, re.IGNORECASE)
+            document_result = re.search(expression, pdf_text)
             if document_result:
                 return document_result
         return None
