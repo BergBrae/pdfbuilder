@@ -63,7 +63,7 @@ class PDFClassification:
 
     def applies_to(self, pdf) -> bool:
         if self.applies_to_directory.get():
-            directory_result = re.search(self.regex.get(), pdf.directory, re.IGNORECASE)
+            directory_result = re.search(self.regex.get(), pdf.path, re.IGNORECASE)
             if directory_result:
                 return directory_result
         if self.applies_to_filename.get():

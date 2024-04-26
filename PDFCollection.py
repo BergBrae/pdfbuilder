@@ -78,11 +78,11 @@ class PDFCollection:
         for classification in sort_key:
             for pdf in self.files:
                 match = classification.applies_to(pdf)
-                pdf_or_failed = self.failed_open(
+                pdf_if_failed = self.failed_open(
                     pdf
                 )  # PDFFile when faield, False when not failed
                 if (
-                    pdf_or_failed is False
+                    pdf_if_failed is False or pdf_if_failed is None
                 ):  # self.failed_open removes the files from self.files and adds it to self.failed_files
                     if match and pdf not in sorted_files:
                         sorted_files.append(pdf)
@@ -92,8 +92,8 @@ class PDFCollection:
                             for i, group in enumerate(match.groups(), start=1):
                                 bookmark = bookmark.replace(f"\\{i}", group)
                             self.bookmarks[pdf] = bookmark
-                elif isinstance(pdf_or_failed, PDFFile):
-                    files_to_remove.append(pdf_or_failed)
+                elif isinstance(pdf_if_failed, PDFFile):
+                    files_to_remove.append(pdf_if_failed)
 
         for pdf in files_to_remove:
             self.remove_file(pdf)
