@@ -40,11 +40,13 @@ class RegexGenerator:
         return regex_expression
 
     def open_dialog(self, insert_into=None, event=None):
+        spacing = 10
+
         self.insert_into = insert_into
 
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
-            self.dialog.geometry("400x250")
+            self.dialog.geometry("400x350")
             self.dialog.title("Regex Generator")
 
         self.dialog.focus_set()
@@ -70,12 +72,12 @@ class RegexGenerator:
         self.submit_button.bind("<Control-Return>", self.submit)
 
         self.output_label = tk.Label(self.dialog_frame, text="Generated regex pattern:")
-        self.output_label.pack()
+        self.output_label.pack(pady=(spacing, 0))
         self.output = Text(self.dialog_frame, height=1, width=50)
         self.output.pack()
 
         self.test_label = tk.Label(self.dialog_frame, text="Test your regex pattern:")
-        self.test_label.pack()
+        self.test_label.pack(pady=(spacing, 0))
         self.test_input = Text(self.dialog_frame, height=1, width=50)
         self.test_input.pack()
         self.test_input.bind("<KeyRelease>", self.test_regex)
@@ -91,13 +93,13 @@ class RegexGenerator:
 
         self.dialog_frame.pack()
 
-    def test_regex(self, event):
+    def test_regex(self, event=None):
         # Get the current regex and the test string
         regex = self.output.get(1.0, tk.END).strip()
         test_string = self.test_input.get(1.0, tk.END).strip()
 
         # Test the regex against the test string and display the result
-        if re.match(regex, test_string):
+        if re.fullmatch(regex, test_string, re.IGNORECASE):
             self.test_result.config(text="Match")
         else:
             self.test_result.config(text="No match")
@@ -109,6 +111,7 @@ class RegexGenerator:
         if not re.match(self.output_str, r"\(.+\)"):
             self.output_str = f"({self.output_str})"
         self.output.insert(tk.END, self.output_str)
+        self.test_regex()
 
     def accept(self):
         self.dialog.destroy()
