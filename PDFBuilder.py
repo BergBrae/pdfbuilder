@@ -52,6 +52,8 @@ class PDFBuilder:
         self.tree.bind(
             "<Control-a>", lambda e: self.tree.selection_set(self.tree.get_children())
         )
+        self.tree.bind("<Control-Up>", self.move_file_up)
+        self.tree.bind("<Control-Down>", self.move_file_down)
 
         self.style = ttk.Style()
         self.style.theme_use("flatly")
