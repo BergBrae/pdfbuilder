@@ -2,7 +2,12 @@ from tkinter import simpledialog, Text, Button, Toplevel
 import tkinter as tk
 
 from PDFClassification import PDFClassification
-from RegexGenerator import RegexGenerator
+
+
+USE_OLLAMA = False
+
+if USE_OLLAMA:
+    from RegexGenerator import RegexGenerator
 
 
 class PDFSortKey:
@@ -13,7 +18,8 @@ class PDFSortKey:
         self.dialog.destroy()
 
         self.sort_key: list[PDFClassification] = [PDFClassification(regex="")]
-        self.regex_generator = RegexGenerator(self.root)
+        if USE_OLLAMA:
+            self.regex_generator = RegexGenerator(self.root)
 
     def __iter__(self):
         for key in self.sort_key:
@@ -57,10 +63,11 @@ class PDFSortKey:
             buttons_frame, text="Add Key", command=self.add_key
         )
         self.add_key_button.pack(side=tk.LEFT)
-        self.generate_regex_button = Button(
-            buttons_frame, text="Generate Regex", command=self.generate_regex
-        )
-        self.generate_regex_button.pack(side=tk.LEFT, padx=5)
+        if USE_OLLAMA:
+            self.generate_regex_button = Button(
+                buttons_frame, text="Generate Regex", command=self.generate_regex
+            )
+            self.generate_regex_button.pack(side=tk.LEFT, padx=5)
 
         buttons_frame.pack()
 
