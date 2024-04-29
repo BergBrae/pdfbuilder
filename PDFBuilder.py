@@ -7,6 +7,8 @@ import pickle as pkl
 from copy import deepcopy
 from glob import glob
 import ttkbootstrap as ttk
+import tkinter as tk
+from tkinter import messagebox, filedialog
 
 from PDFFile import PDFFile
 from PDFCollection import PDFCollection
@@ -219,17 +221,42 @@ class PDFBuilder:
 
     def save_state(self):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdfbuilder.json")
-        # readers cannot be pickled
-        self.pdfs.clear_readers()
-        to_save = (self.pdfs, self.sorter.sort_key)
+        if not output_path:
+            return
 
-        if output_path:
-            pdf_collection = self.pdfs.to_dict()
-            sort_key = self.sorter.to_dict()
+        # Create a new window
+        window = Toplevel(self.root)
+        window.title("PDF Builder")
+
+        # Variables for checkboxes
+        save_files = tk.BooleanVar()
+        save_sort_key = tk.BooleanVar()
+
+        # Checkboxes
+        tk.Checkbutton(window, text="Save files", variable=save_files).pack()
+        tk.Checkbutton(window, text="Save sort key", variable=save_sort_key).pack()
+
+        # Save button
+        def save():
+            if save_files.get():
+                pdf_collection = self.pdfs.to_dict()
+            else:
+                pdf_collection = None
+
+            if save_sort_key.get():
+                sort_key = self.sorter.to_dict()
+            else:
+                sort_key = None
+
             to_save = json.dumps({"pdfs": pdf_collection, "sort_key": sort_key})
+
             with open(output_path, "w") as f:
                 f.write(to_save)
+
             messagebox.showinfo("PDF Builder", "State has been saved successfully.")
+            window.destroy()
+
+        tk.Button(window, text="Save", command=save).pack()
 
     def load_state(self):
         input_path = filedialog.askopenfilename(
@@ -238,13 +265,51 @@ class PDFBuilder:
 
         with open(input_path, "r") as f:
             data = json.load(f)
-        pdf_collection = data["pdfs"]
-        sort_key = data["sort_key"]
 
-        self.pdfs = PDFCollection.from_dict(pdf_collection)
-        self.sorter = PDFSortKey.from_dict(sort_key, self.root)
+        pdf_collection = data.get("pdfs")
+        sort_key = data.get("sort_key")
 
-        self.update_tree()
+        pdf_collection_is_present = pdf_collection is not None
+        sort_key_is_present = sort_key is not None
+
+        if pdf_collection_is_present != sort_key_is_present:  # if only one is None
+            if pdf_collection_is_present:
+                self.pdfs = PDFCollection.from_dict(pdf_collection)
+            if sort_key_is_present:
+                self.sorter = PDFSortKey.from_dict(sort_key, self.root)
+
+            self.update_tree()
+            messagebox.showinfo("PDF Builder", "State has been loaded successfully.")
+            return
+
+        # Create a new window
+        window = Toplevel(self.root)
+        window.title("PDF Builder")
+
+        # Variables for checkboxes
+        load_files = tk.BooleanVar()
+        load_sort_key = tk.BooleanVar()
+
+        # Checkboxes
+        if pdf_collection:
+            tk.Checkbutton(window, text="Load files", variable=load_files).pack()
+        if sort_key:
+            tk.Checkbutton(window, text="Load sort key", variable=load_sort_key).pack()
+
+        # Load button
+        def load():
+            if load_files.get() and pdf_collection:
+                self.pdfs = PDFCollection.from_dict(pdf_collection)
+            if load_sort_key.get() and sort_key:
+                self.sorter = PDFSortKey.from_dict(sort_key, self.root)
+
+            self.update_tree()
+            messagebox.showinfo("PDF Builder", "State has been loaded successfully.")
+            window.destroy()
+
+        tk.Button(window, text="Load", command=load).pack()
+
+        window.mainloop()
 
     def build_pdf(self, event=None):
         # Create a new dialog window
