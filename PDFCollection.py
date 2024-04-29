@@ -13,6 +13,8 @@ from PDFSortKey import PDFSortKey
 
 
 class PDFCollection:
+    captured_keyword = "_"
+
     def __init__(self):
         self.files = []
         self.bookmarks = {}  # {PDFFile: bookmark_title: str}
@@ -90,7 +92,9 @@ class PDFCollection:
                         bookmark = classification.bookmark.get().strip()
                         if bookmark:
                             for i, group in enumerate(match.groups(), start=1):
-                                bookmark = bookmark.replace(f"\\{i}", group)
+                                bookmark = bookmark.replace(
+                                    f"{PDFCollection.captured_keyword}", group
+                                )
                             self.bookmarks[pdf] = bookmark
                 elif isinstance(pdf_if_failed, PDFFile):
                     files_to_remove.append(pdf_if_failed)

@@ -98,6 +98,8 @@ class RegexGenerator:
         self.output.delete(1.0, tk.END)
         input_str = self.text.get(1.0, tk.END)
         self.output_str = self.nl_to_regex(input_str)
+        if not re.match(self.output_str, r"\(.+\)"):
+            self.output_str = f"({self.output_str})"
         self.output.insert(tk.END, self.output_str)
 
     def accept(self):

@@ -62,7 +62,10 @@ class PDFClassification:
         return frame
 
     def applies_to(self, pdf) -> bool:
-        expression = re.compile(self.regex.get(), re.IGNORECASE)
+        input_regex = self.regex.get()
+        if not input_regex.startswith("(") and not input_regex.endswith(")"):
+            input_regex = f"({input_regex})"
+        expression = re.compile(input_regex, re.IGNORECASE)
         if self.applies_to_directory.get():
             directory_result = re.search(expression, pdf.path)
             if directory_result:
