@@ -60,21 +60,27 @@ class PDFBuilder:
         self.toolbar_frame = tk.Frame(self.root)
         self.toolbar_frame.pack(fill=tk.X)
 
+        default_spacing = 4
+        large_spacing = 50
         toolbar_buttons = [
-            ("Clear", self.clear_files),
-            ("Remove Selected", self.remove_selected),
-            ("Load", self.load_state),
-            ("Save", self.save_state),
-            ("Add Files", self.add_files),
-            ("Add Directory", self.add_directory),
-            ("Sort Key", self.open_sort_dialog),
-            ("Remove Selected Bookmarks", self.remove_selected_bookmarks),
-            ("Show File Contents", self.show_file_text),
+            ("Clear", self.clear_files, default_spacing),
+            ("Remove Selected", self.remove_selected, default_spacing),
+            ("Load", self.load_state, default_spacing),
+            ("Save", self.save_state, default_spacing),
+            ("Add Files", self.add_files, default_spacing),
+            ("Add Directory", self.add_directory, default_spacing),
+            ("Sort Key", self.open_sort_dialog, large_spacing),
+            (
+                "Remove Selected Bookmarks",
+                self.remove_selected_bookmarks,
+                default_spacing,
+            ),
+            ("Show File Contents", self.show_file_text, large_spacing),
         ]
 
-        for button_text, command in toolbar_buttons:
+        for button_text, command, spacing in toolbar_buttons:
             button = tk.Button(self.toolbar_frame, text=button_text, command=command)
-            button.pack(side=tk.LEFT, padx=2, pady=2)
+            button.pack(side=tk.LEFT, padx=(spacing, 0), pady=2)
 
     def create_treeview(self):
         self.tree = ttk.Treeview(
