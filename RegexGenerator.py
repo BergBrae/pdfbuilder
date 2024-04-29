@@ -39,7 +39,7 @@ class RegexGenerator:
         )  # clean the expression of code blocks, quotes etc.
         return regex_expression
 
-    def open_dialog(self, insert_into, event=None):
+    def open_dialog(self, insert_into=None, event=None):
         self.insert_into = insert_into
 
         if not self.dialog.winfo_exists():
@@ -69,18 +69,20 @@ class RegexGenerator:
         self.submit_button.pack(pady=10)
         self.submit_button.bind("<Control-Return>", self.submit)
 
+        self.output_label = tk.Label(self.dialog_frame, text="Generated regex pattern:")
+        self.output_label.pack()
         self.output = Text(self.dialog_frame, height=1, width=50)
         self.output.pack()
 
-        self.help_link = tk.Label(
-            self.dialog_frame,
-            text="You can test the regex here",
-            fg="blue",
-            cursor="hand2",
-            underline=True,
-        )
-        self.help_link.bind("<Button-1>", lambda e: open_link("https://regex101.com/"))
-        self.help_link.pack()
+        self.test_label = tk.Label(self.dialog_frame, text="Test your regex pattern:")
+        self.test_label.pack()
+        self.test_input = Text(self.dialog_frame, height=1, width=50)
+        self.test_input.pack()
+        self.test_input.bind("<KeyRelease>", self.test_regex)
+
+        # Add a new Label widget to display the result of the regex test
+        self.test_result = tk.Label(self.dialog_frame, text="")
+        self.test_result.pack()
 
         self.accept_button = Button(
             self.dialog_frame, text="Accept", command=self.accept
@@ -88,6 +90,17 @@ class RegexGenerator:
         self.accept_button.pack(pady=10)
 
         self.dialog_frame.pack()
+
+    def test_regex(self, event):
+        # Get the current regex and the test string
+        regex = self.output.get(1.0, tk.END).strip()
+        test_string = self.test_input.get(1.0, tk.END).strip()
+
+        # Test the regex against the test string and display the result
+        if re.match(regex, test_string):
+            self.test_result.config(text="Match")
+        else:
+            self.test_result.config(text="No match")
 
     def submit(self):
         self.output.delete(1.0, tk.END)
