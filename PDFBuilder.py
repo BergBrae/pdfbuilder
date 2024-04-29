@@ -63,13 +63,13 @@ class PDFBuilder:
         self.toolbar_frame.pack(fill=tk.X)
 
         default_spacing = 4
-        large_spacing = 50
+        large_spacing = 100
         toolbar_buttons = [
             ("Clear", self.clear_files, default_spacing),
             ("Remove Selected", self.remove_selected, default_spacing),
-            ("Load", self.load_state, default_spacing),
+            ("Load", self.load_state, large_spacing),
             ("Save", self.save_state, default_spacing),
-            ("Add Files", self.add_files, default_spacing),
+            ("Add Files", self.add_files, large_spacing),
             ("Add Directory", self.add_directory, default_spacing),
             ("Sort Key", self.open_sort_dialog, large_spacing),
             (
@@ -77,7 +77,6 @@ class PDFBuilder:
                 self.remove_selected_bookmarks,
                 default_spacing,
             ),
-            ("Show File Contents", self.show_file_text, large_spacing),
         ]
 
         for button_text, command, spacing in toolbar_buttons:
