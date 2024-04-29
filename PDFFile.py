@@ -12,8 +12,6 @@ class PDFFile:
         self.directory = os.path.dirname(path)
 
         filename_without_extension, _ = os.path.splitext(self.filename)
-        filename_parts: list[str] = re.split(r"[\s_.-]+", filename_without_extension)
-        self.filename_parts: list[str] = [part.upper() for part in filename_parts]
 
         self._reader = None
         self._num_pages = None
@@ -83,7 +81,6 @@ class PDFFile:
             "filename": self.filename,
             "path": self.path,
             "directory": self.directory,
-            "filename_parts": self.filename_parts,
             "num_pages": self.num_pages if self._num_pages is not None else None,
             "text": self.text if self._text is not None else None,
         }
@@ -93,7 +90,6 @@ class PDFFile:
         pdf = cls(data["path"], check_exists=False)
         pdf.filename = data["filename"]
         pdf.directory = data["directory"]
-        pdf.filename_parts = data["filename_parts"]
         pdf._num_pages = data["num_pages"]
         pdf._text = data["text"]
         return pdf
