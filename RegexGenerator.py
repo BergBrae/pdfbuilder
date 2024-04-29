@@ -25,17 +25,12 @@ class RegexGenerator:
             ollama.pull(modelname)
 
     def nl_to_regex(self, nat_lang_str: str, event=None):
-        message = f"You generate python compatible regular expressions that are directly used from within python. Your responses are 100% a python regex without the surrounding code. Do not output anything that is not a regex string. DO NOT write an explanation. Do not use code blocks or '`'. Use ( and ) to capture parts that the user requests. The expression to match is: {nat_lang_str}"
-        response = ollama.chat(
+        message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria.\nDescription: {nat_lang_str}\nExpected output: "
+        response = ollama.generate(
             model=modelname,
-            messages=[
-                {
-                    "role": "user",
-                    "content": message,
-                },
-            ],
+            prompt=message,
         )
-        response = response["message"]["content"]
+        response = response["response"]
         print(response)
         regex_expression = re.sub(
             "[`r\"'\n\r\\s]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
@@ -105,6 +100,7 @@ class RegexGenerator:
     def accept(self):
         self.dialog.destroy()
         if self.insert_into:
+            self.insert_into.delete(0, tk.END)
             self.insert_into.insert(tk.END, self.output_str)
         return self.output_str
 

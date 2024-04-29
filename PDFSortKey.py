@@ -72,10 +72,7 @@ class PDFSortKey:
         buttons_frame.pack()
 
     def get_textbox_with_cursor(self):
-        for key in self.sort_key:
-            if key.regex_entry.focus_get():
-                return key.regex_entry
-        return None
+        return self.root.focus_get()
 
     def generate_regex(self):
         self.regex_generator.open_dialog(insert_into=self.get_textbox_with_cursor())
