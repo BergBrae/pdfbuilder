@@ -219,6 +219,7 @@ class PDFBuilder:
             pdf_files = glob(
                 os.path.join(directory, "**/*.pdf"), recursive=True
             ) + glob(os.path.join(directory, "**/*.PDF"), recursive=True)
+            pdf_files = [os.path.normpath(f) for f in pdf_files]
             for file in pdf_files:
                 try:
                     self.pdfs.add_file(PDFFile(file))
