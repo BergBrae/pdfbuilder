@@ -8,3 +8,4 @@ build/
 PDFBuilder.spec
 build_exe.bat
 todo.txt
+*.spec
