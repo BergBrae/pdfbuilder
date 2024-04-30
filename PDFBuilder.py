@@ -409,6 +409,8 @@ class PDFBuilder:
                 self.alert_failed_files()
                 messagebox.showinfo("PDF Builder", "PDF has been built successfully.")
             except Exception as e:
+                window.destroy()
+                progress_window.destroy()
                 messagebox.showerror("Error", str(e))
                 raise e
 
