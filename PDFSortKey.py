@@ -41,7 +41,7 @@ class PDFSortKey:
         self.dialog_frame = tk.Frame(self.dialog)
 
         header_text = (
-            f"Applies to: {' '*60} Bookmark Title: {' '*19} Regex Expression: {' '*26}"
+            f"Applies to: {' '*60} Bookmark Title: {' '*19} Regex Expression: {' '*75}"
         )
 
         containers = [tk.Label(self.dialog_frame, text=header_text)]
