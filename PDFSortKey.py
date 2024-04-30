@@ -29,7 +29,7 @@ class PDFSortKey:
     def open_dialog(self, event=None):
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
-            self.dialog.geometry("700x300")
+            self.dialog.geometry("800x300")
             self.dialog.title("Sort Key")
 
         self.dialog.focus_set()
@@ -52,7 +52,17 @@ class PDFSortKey:
             delete_key = Button(
                 frame, text="Delete", command=lambda i=i: self.delete_key(i, frame)
             )
-            delete_key.pack(side=tk.RIGHT)
+
+            move_up = Button(frame, text="Move Up", command=lambda i=i: self.move_up(i))
+            move_up.pack(side=tk.RIGHT, padx=5)
+
+            move_down = Button(
+                frame, text="Move Down", command=lambda i=i: self.move_down(i)
+            )
+            move_down.pack(side=tk.RIGHT, padx=5)
+
+            delete_key.pack(side=tk.RIGHT, padx=5)
+
             containers.append(frame)
             containers[-1].pack(pady=5)
         self.dialog_frame.pack()
@@ -69,7 +79,23 @@ class PDFSortKey:
             )
             self.generate_regex_button.pack(side=tk.LEFT, padx=5)
 
-        buttons_frame.pack()
+        buttons_frame.pack(padx=5)
+
+    def move_up(self, i):
+        num_keys = len(self.sort_key)
+        self.sort_key[i], self.sort_key[(i - 1) % num_keys] = (
+            self.sort_key[(i - 1) % num_keys],
+            self.sort_key[i],
+        )
+        self.open_dialog()
+
+    def move_down(self, i):
+        num_keys = len(self.sort_key)
+        self.sort_key[i], self.sort_key[(i + 1) % num_keys] = (
+            self.sort_key[(i + 1) % num_keys],
+            self.sort_key[i],
+        )
+        self.open_dialog()
 
     def get_textbox_with_cursor(self):
         return self.root.focus_get()
