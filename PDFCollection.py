@@ -91,10 +91,11 @@ class PDFCollection:
 
                         bookmark = classification.bookmark.get().strip()
                         if bookmark:
-                            for i, group in enumerate(match.groups(), start=1):
-                                bookmark = bookmark.replace(
-                                    f"{PDFCollection.captured_keyword}", group
-                                )
+                            for i, group in enumerate(match.groups()):
+                                if i == 0:
+                                    bookmark = bookmark.replace(
+                                        f"{PDFCollection.captured_keyword}", group
+                                    )
                             self.bookmarks[pdf] = bookmark
                 elif isinstance(pdf_if_failed, PDFFile):
                     files_to_remove.append(pdf_if_failed)
