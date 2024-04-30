@@ -22,7 +22,7 @@ class RegexGenerator:
         try:
             ollama.list(modelname)
         except:
-            ollama.pull(modelname)
+            print(f"{modelname} not found. Please pull the model.")
 
     def nl_to_regex(self, nat_lang_str: str, event=None):
         message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria.\nDescription: {nat_lang_str}\nExpected output: "
@@ -116,6 +116,7 @@ class RegexGenerator:
     def accept(self):
         self.dialog.destroy()
         if self.insert_into:
+            self.output_str = self.output.get(1.0, tk.END).strip()
             self.insert_into.delete(0, tk.END)
             self.insert_into.insert(tk.END, self.output_str)
         return self.output_str
