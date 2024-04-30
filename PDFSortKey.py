@@ -4,7 +4,7 @@ import tkinter as tk
 from PDFClassification import PDFClassification
 
 
-USE_OLLAMA = False
+USE_OLLAMA = True
 
 if USE_OLLAMA:
     from RegexGenerator import RegexGenerator
