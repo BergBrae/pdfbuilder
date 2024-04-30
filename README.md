@@ -1,44 +1,45 @@
-### README for PDF Builder Repository
+# PDF Builder: A Tkinter Application for Managing PDF Files
 
-#### Introduction
-The PDF Builder repository contains a set of Python scripts that facilitate the creation, manipulation, and organization of PDF files. It includes functionality for adding bookmarks, merging PDFs, adding page numbers, and sorting PDF files based on customizable sort keys.
+PDF Builder is a comprehensive desktop application designed to facilitate the management, sorting, and combining of PDF files. It is built using Python's Tkinter library and provides an interactive GUI for users to efficiently handle PDF documents. The application offers functionalities such as adding bookmarks, sorting PDFs based on custom criteria, merging multiple PDFs into a single document, and adding page numbers to PDFs.
 
-#### Repository Contents
-- **PDFBuilder.py**: Main application script for the PDF Builder GUI, enabling PDF file management and operations.
-- **PDFCollection.py**: Manages a collection of PDF files, including adding, removing, and sorting functionalities.
-- **PDFFile.py**: Represents a single PDF file, handling file-specific operations like reading and classifying.
-- **classify_pdf.py**: Stub for a function to classify PDF files based on their content.
-- **add_page_numers.py**: Script to add page numbers to a PDF file.
-- **open_file.py**: Utility script to open a file using the default application based on the operating system.
-- **sorting.py**: Contains a dialog for setting and saving a sort key used for organizing PDF files.
-- **state.json**: Stores paths to example PDF files for testing or demonstration.
-- **todo.txt**: Text file listing tasks or bugs to fix.
-- **PDFBuilder.spec**: Configuration file for PyInstaller to build an executable from the PDFBuilder script.
-- **run_with_python.bat** and **build_exe.bat**: Batch scripts for setting up the environment and building an executable, respectively.
-- **requirements.txt**: Lists dependencies needed to run the scripts.
-- **sort_key.txt**: Text file storing user-defined sort keys for PDF organization.
+## Features:
+- **Load and Save Project State**: Users can save their current project state, including loaded PDFs and sort keys, and reload them later.
+- **Add Files and Directories**: Users can add individual PDF files or entire directories containing PDF files.
+- **Sorting Mechanism**: Users can define custom sort keys using regular expressions to automatically sort PDFs based on filename, directory, or content.
+- **Bookmark Management**: Users can add, edit, and remove bookmarks from PDF files to help organize documents.
+- **PDF Merging**: Merge multiple PDF files into a single document with options to add page numbers and manage bookmarks.
+- **View PDF Text**: View text extracted from PDF files directly within the application.
+- **Regular Expression Assistance**: An integrated Regex Generator helps users create regular expressions based on natural language inputs.
 
-#### Installation and Setup
-1. **Install Python**: Ensure Python is installed on your system. Python 3.8 or higher is recommended.
-2. **Clone the Repository**: Download or clone this repository to your local machine.
-3. **Install Dependencies**: Navigate to the repository directory and run:
+## Installation
+To use PDF Builder, you need Python installed on your system along with the necessary libraries. Here’s how to get started:
 
-`pip install -r requirements.txt`
+1. **Install Python**: Ensure Python 3.x is installed on your machine.
+2. **Install Dependencies**:
+```bash
+pip install -r requirements.txt
+```
+3. **Run the Application**: Navigate to the application's directory in your terminal and run:
+```bash
+python main.py
+```
 
-4. **Run PDFBuilder**: Start the application by running:
+## Usage
+### Managing PDF Files
+- Add Files: Click on "Add Files" to select PDFs to load.
+Add Directory: Use "Add Directory" to load all PDF files within a specific directory.
+- Remove Selected: Select files in the list and click "Remove Selected" to delete them from the project.
+### Sorting and Bookmarks
+- Sort Key: Define sort keys that determine how files should be organized. This can include regular expressions for matching and sorting based on the content or names of files.
+- Edit Bookmarks: Double-click on the bookmark column of a file to edit its bookmark.
+### Merging and Exporting PDFs
+- Build PDF: Click "Build PDF" to combine the selected PDFs into a single document. This feature includes options for adding page numbers and managing bookmarks during the merge process.
+### Saving and Loading State
+- Save State: Save the current state of your project, including loaded PDFs and configured sort keys, into a .pdfbuilder.json file.
+- Load State: Load a previously saved state from a .pdfbuilder.json file to resume work.
+### Additional Features
+- View PDF Text: Right-click on a PDF file and select "Show Text" to view its contents.
+- Regex Generator: Use the Regex Generator to create regular expressions based on natural language descriptions.
 
-`python PDFBuilder.py`
-
-
-#### Usage
-- **Adding PDFs**: Use the "Add Files" or "Add Directory" buttons to load PDF files into the application.
-- **Organizing PDFs**: Sort PDF files using customizable sort keys via the "Sort Key" button. Files can be manually moved up and down in the list.
-- **Editing Bookmarks**: Double-click on the bookmark column to add or edit bookmarks for individual PDF files.
-- **Building PDFs**: Compile selected PDF files into a single document with optional page numbers, bookmarks, and specified page settings.
-- **Exporting PDFs**: After arranging and optionally merging files, use the "Build PDF" button to save the final PDF to a desired location.
-
-#### Development
-- **Modify Code**: Scripts like `classify_pdf.py` and `PDFClassifier.py` are stubs or skeletons that can be further developed to add additional functionality such as PDF content classification.
-- **Add Features**: Implement features listed in `todo.txt` or enhance existing functionalities.
-
-This repository provides a robust tool for PDF file management and is ideal for users needing customizable, scriptable PDF processing capabilities.
+## Compatibility
+This application was devloped and tested on Windows. Compatibility with other systems may be limited.
