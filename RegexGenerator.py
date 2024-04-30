@@ -19,11 +19,6 @@ class RegexGenerator:
         self.dialog.title("Regex Generator")
         self.dialog.destroy()
 
-        try:
-            ollama.list(modelname)
-        except:
-            print(f"{modelname} not found. Please pull the model.")
-
     def nl_to_regex(self, nat_lang_str: str, event=None):
         message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria.\nDescription: {nat_lang_str}\nExpected output: "
         response = ollama.generate(
