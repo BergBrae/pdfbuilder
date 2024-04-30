@@ -4,6 +4,24 @@ import PyPDF2
 
 
 def add_page_number(input_pdf_bytes, y_padding=20, font_size=12):
+    """
+    Adds page numbers to each page of a PDF document.
+
+    Args:
+        input_pdf_bytes (bytes): The input PDF document as bytes.
+        y_padding (int, optional): The vertical padding for the page number. Defaults to 20.
+        font_size (int, optional): The font size of the page number. Defaults to 12.
+
+    Returns:
+        bytes: The modified PDF document with page numbers.
+
+    Raises:
+        None
+
+    Example:
+        input_bytes = b'...'  # PDF document as bytes
+        output_bytes = add_page_number(input_bytes, y_padding=30, font_size=14)
+    """
     # Create a new PDF, but just with page numbers.
     packet = BytesIO()
     can = canvas.Canvas(packet)
