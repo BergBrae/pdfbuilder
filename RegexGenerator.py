@@ -114,11 +114,11 @@ class RegexGenerator:
         self.test_regex()
 
     def accept(self):
-        self.dialog.destroy()
         if self.insert_into:
             self.output_str = self.output.get(1.0, tk.END).strip()
             self.insert_into.delete(0, tk.END)
             self.insert_into.insert(tk.END, self.output_str)
+        self.dialog.destroy()
         return self.output_str
 
 
