@@ -11,8 +11,6 @@ class PDFFile:
         self.filename = os.path.basename(path)
         self.directory = os.path.dirname(path)
 
-        filename_without_extension, _ = os.path.splitext(self.filename)
-
         self._reader = None
         self._num_pages = None
         self.keep_open = keep_open
@@ -20,9 +18,6 @@ class PDFFile:
         self.error = None
 
         self._text: list[str] = None
-
-        self.classifications: list[str] = None
-        # self.classify()
 
     def __hash__(self):
         return hash(self.path)
@@ -81,8 +76,8 @@ class PDFFile:
             "filename": self.filename,
             "path": self.path,
             "directory": self.directory,
-            "num_pages": self.num_pages if self._num_pages is not None else None,
-            "text": self.text if self._text is not None else None,
+            "num_pages": self._num_pages,
+            "text": self._text,
         }
 
     @classmethod
