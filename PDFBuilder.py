@@ -390,6 +390,7 @@ class PDFBuilder:
     def export_pdf(self, window, add_page_numbers, y_padding, font_size):
         output_path = filedialog.asksaveasfilename(defaultextension=".pdf")
         if output_path:
+            window.destroy()
             try:
                 progress_object, progress_window = self.export_progress_window()
                 for progress in self.pdfs.build_pdf(
@@ -403,7 +404,6 @@ class PDFBuilder:
 
                 self.update_tree()
 
-                window.destroy()
                 progress_window.destroy()
 
                 self.alert_failed_files()
