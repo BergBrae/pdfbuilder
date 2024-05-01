@@ -1,4 +1,4 @@
-from tkinter import simpledialog, Text, Button, Toplevel
+from tkinter import simpledialog, Text, Button, Toplevel, messagebox
 import tkinter as tk
 import ollama
 import re
@@ -20,19 +20,25 @@ class RegexGenerator:
         self.dialog.destroy()
 
     def nl_to_regex(self, nat_lang_str: str, event=None):
-        message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria.\nDescription: {nat_lang_str}\nExpected output: "
-        response = ollama.generate(
-            model=modelname,
-            prompt=message,
-        )
-        response = response["response"]
-        print(response)
-        regex_expression = re.sub(
-            "[`r\"'\n\r\\s]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
-            r"\1",
-            response,
-        )  # clean the expression of code blocks, quotes etc.
-        return regex_expression
+        try:
+            message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria.\nDescription: {nat_lang_str}\nExpected output: "
+            response = ollama.generate(
+                model=modelname,
+                prompt=message,
+            )
+            response = response["response"]
+            print(response)
+            regex_expression = re.sub(
+                "[`r\"'\n\r\\s]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
+                r"\1",
+                response,
+            )  # clean the expression of code blocks, quotes etc.
+            return regex_expression
+        except Exception as e:
+            messagebox.showerror(
+                "Error: Ollama is not running", f"Please install/run Ollama\n\n{e}"
+            )
+            return ""
 
     def open_dialog(self, insert_into=None, event=None):
         spacing = 10
