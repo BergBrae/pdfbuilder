@@ -9,7 +9,7 @@ def open_link(url):
     webbrowser.open_new(url)
 
 
-modelname = "phi3"
+modelname = "phi3:mini"
 
 
 class RegexGenerator:
