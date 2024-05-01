@@ -68,7 +68,12 @@ def add_page_number(input_pdf_bytes, y_padding=20, font_size=12):
     pdf_writer = PyPDF2.PdfWriter()
     for page_num in range(total_num_pages):
         page = pdf.pages[page_num]
-        page.merge_page(new_pdf.pages[page_num])
+        try:
+            page.merge_page(new_pdf.pages[page_num])
+        except:
+            raise ValueError(
+                "Something went wrong while adding page numbers. Please try again."
+            )
         pdf_writer.add_page(page)
 
     output_pdf_bytes = BytesIO()
