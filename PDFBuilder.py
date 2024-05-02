@@ -216,10 +216,11 @@ class PDFBuilder:
     def add_directory(self, event=None):
         directory = filedialog.askdirectory()
         if directory:
-            pdf_files = glob(
-                os.path.join(directory, "**/*.pdf"), recursive=True
-            ) + glob(os.path.join(directory, "**/*.PDF"), recursive=True)
-            pdf_files = [os.path.normpath(f) for f in pdf_files]
+            pdf_files = []
+            for root, dirs, files in os.walk(directory):
+                for file in files:
+                    if file.lower().endswith(".pdf"):
+                        pdf_files.append(os.path.normpath(os.path.join(root, file)))
             for file in pdf_files:
                 try:
                     self.pdfs.add_file(PDFFile(file))
