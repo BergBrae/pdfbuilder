@@ -79,6 +79,11 @@ class PDFSortKey:
             )
             self.generate_regex_button.pack(side=tk.LEFT, padx=5)
 
+        self.close_button = Button(
+            buttons_frame, text="Close", command=self.dialog.destroy
+        )
+        self.close_button.pack(side=tk.RIGHT)
+
         buttons_frame.pack(padx=5)
 
     def move_up(self, i):
