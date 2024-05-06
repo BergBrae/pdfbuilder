@@ -73,27 +73,27 @@ class RegexGenerator:
         self.test_input.pack()
         self.test_input.bind("<KeyRelease>", self.test_regex)
 
-        self.progress_label = tk.Label(self.dialog_frame, text="")
-        self.progress_label.pack()
-
         self.submit_button = Button(
             self.dialog_frame, text="Submit", command=self.submit
         )
         self.submit_button.pack(pady=10)
         self.submit_button.bind("<Control-Return>", self.submit)
 
+        self.progress_label = tk.Label(self.dialog_frame, text="")
+        self.progress_label.pack()
+
         self.output_label = tk.Label(self.dialog_frame, text="Generated Text Pattern:")
         self.output_label.pack()
         self.output = Text(self.dialog_frame, height=1, width=50)
         self.output.pack()
 
-        self.test_result = tk.Label(self.dialog_frame, text="")
-        self.test_result.pack()
-
         self.accept_button = Button(
             self.dialog_frame, text="Accept", command=self.accept
         )
-        self.accept_button.pack(pady=10)
+        self.accept_button.pack(pady=5)
+
+        self.test_result = tk.Label(self.dialog_frame, text="")
+        self.test_result.pack(side=tk.BOTTOM)
 
         self.dialog_frame.pack()
 
@@ -131,12 +131,13 @@ class RegexGenerator:
             self.output.insert(tk.END, self.output_str)
             self.root.update()  # Force update the GUI
 
+            attempts += 1
+            self.progress_label.config(text=f"Try {attempts} of {max_tries}")
+
             if self.test_regex():
                 break
 
             failed_attempts.append(self.output_str)
-            attempts += 1
-            self.progress_label.config(text=f"Try {attempts} of {max_tries}")
             self.root.update()  # Force update the GUI
 
     def accept(self):
