@@ -22,6 +22,7 @@ class RegexGenerator:
     def nl_to_regex(self, nat_lang_str: str, failed_attempts=None, event=None):
         try:
             if failed_attempts:
+                failed_attempts = set(failed_attempts)
                 nat_lang_str += (
                     "\nThe following are previous attempts that failed. Do not generate these patterns.\n"
                     + "\n".join(failed_attempts)
