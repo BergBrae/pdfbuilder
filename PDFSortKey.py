@@ -41,7 +41,7 @@ class PDFSortKey:
         self.dialog_frame = tk.Frame(self.dialog)
 
         header_text = (
-            f"Applies to: {' '*60} Bookmark Title: {' '*19} Regex Expression: {' '*75}"
+            f"Applies to: {' '*60} Bookmark Title: {' '*19} Text Pattern: {' '*85}"
         )
 
         containers = [tk.Label(self.dialog_frame, text=header_text)]
@@ -75,7 +75,7 @@ class PDFSortKey:
         self.add_key_button.pack(side=tk.LEFT)
         if USE_OLLAMA:
             self.generate_regex_button = Button(
-                buttons_frame, text="Generate Regex", command=self.generate_regex
+                buttons_frame, text="Generate Text Pattern", command=self.generate_regex
             )
             self.generate_regex_button.pack(side=tk.LEFT, padx=5)
 

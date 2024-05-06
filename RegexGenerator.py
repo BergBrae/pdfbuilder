@@ -48,7 +48,7 @@ class RegexGenerator:
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
             self.dialog.geometry("400x350")
-            self.dialog.title("Regex Generator")
+            self.dialog.title("Text Pattern Generator")
 
         self.dialog.focus_set()
 
@@ -72,12 +72,12 @@ class RegexGenerator:
         self.submit_button.pack(pady=10)
         self.submit_button.bind("<Control-Return>", self.submit)
 
-        self.output_label = tk.Label(self.dialog_frame, text="Generated regex pattern:")
+        self.output_label = tk.Label(self.dialog_frame, text="Generated Text Pattern:")
         self.output_label.pack(pady=(spacing, 0))
         self.output = Text(self.dialog_frame, height=1, width=50)
         self.output.pack()
 
-        self.test_label = tk.Label(self.dialog_frame, text="Test your regex pattern:")
+        self.test_label = tk.Label(self.dialog_frame, text="Test Your Text Pattern:")
         self.test_label.pack(pady=(spacing, 0))
         self.test_input = Text(self.dialog_frame, height=1, width=50)
         self.test_input.pack()
