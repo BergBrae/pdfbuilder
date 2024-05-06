@@ -1,5 +1,7 @@
 from tkinter import simpledialog, Text, Button, Toplevel
 import tkinter as tk
+import re
+import webbrowser
 
 from PDFClassification import PDFClassification
 
@@ -86,13 +88,39 @@ class PDFSortKey:
 
         buttons_frame.pack(padx=5)
 
-    def move_up(self, i):
-        num_keys = len(self.sort_key)
-        self.sort_key[i], self.sort_key[(i - 1) % num_keys] = (
-            self.sort_key[(i - 1) % num_keys],
-            self.sort_key[i],
+        self.help_button = Button(self.dialog, text="Help", command=self.help_dialog)
+        self.help_button.pack(side=tk.BOTTOM, pady=10)
+
+    def help_dialog(self):
+        def open_link(event):
+            webbrowser.open_new("https://en.wikipedia.org/wiki/Regular_expression")
+
+        # Create the main window
+        root = tk.Tk()
+        root.title("Help")
+
+        # Create a text widget to display information
+        text_info = f"""A regular expression (regex) is a sequence of characters that define a search pattern.
+    In its simplest form, a regex can be used to match a single character or word.
+    For example, the regex 'merit' will simply find the word 'merit' in text.
+    However, regexes can be much more complex and powerful. For example, the regex {r'\w\d{5}\.\d{2}\(\d{2}\)'} will match any of Merit's sample IDs like 'S17535.01(01)'.
+    For help with more complex regexes, you can use the 'Generate Text Pattern' button to create a regex that matches the text you want. Please test your regexes before using them.
+    The matching text can be used in the bookmark name. Use "_" to insert the matched text into the bookmark name.
+    For more information on regexes, see the link below."""
+
+        text_info = re.sub("\\n\\s*", "\\n\\n", text_info)
+
+        label_info = tk.Label(root, text=text_info, justify=tk.LEFT)
+        label_info.pack(padx=10, pady=10)
+
+        # Create a label that acts like a hyperlink
+        link = tk.Label(
+            root, text="More about regular expressions", fg="blue", cursor="hand2"
         )
-        self.open_dialog()
+        link.pack()
+        link.bind("<Button-1>", open_link)
+
+        root.mainloop()
 
     def move_down(self, i):
         num_keys = len(self.sort_key)
