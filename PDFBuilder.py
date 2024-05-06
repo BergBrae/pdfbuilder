@@ -117,7 +117,7 @@ class PDFBuilder:
 
             # create and position entry
             text = self.tree.item(row_id, "values")[column_idx]
-            entry = tk.Entry(self.tree)
+            entry = tk.Entry(self.tree, width=40)  # Adjust the width as desired
             entry.insert(0, text)
             entry.place(x=x, y=y + pady, anchor="w")
             # set focus and selection
