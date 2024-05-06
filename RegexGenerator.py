@@ -125,8 +125,11 @@ class RegexGenerator:
 
         while attempts < max_tries:
             self.output_str = self.nl_to_regex(input_str, failed_attempts)
-            if not re.match(self.output_str, r"\(.+\)"):
-                self.output_str = f"({self.output_str})"
+            try:
+                if not re.match(self.output_str, r"\(.+\)"):
+                    self.output_str = f"({self.output_str})"
+            except re.error:
+                pass
             self.output.delete(1.0, tk.END)
             self.output.insert(tk.END, self.output_str)
             self.root.update()  # Force update the GUI
