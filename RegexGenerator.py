@@ -28,10 +28,9 @@ class RegexGenerator:
                     "\nThe following are previous attempts that failed. Do not generate these patterns.\n"
                     + "\n".join(failed_attempts)
                 )
-            message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria.\nDescription: {nat_lang_str}\nExpected output: "
+            message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria. Note: Make sure to escape charcters that need to be matched. \nDescription: {nat_lang_str}\nExpected output: "
             response = ollama.generate(
-                model=modelname,
-                prompt=message,
+                model=modelname, prompt=message, options={"stop": ["\n", "<|end|>"]}
             )
             response = response["response"]
             print(response)
@@ -82,7 +81,7 @@ class RegexGenerator:
             # Condense repeated words with counts
             quoted_text = re.sub(
                 r"(\b\w+\s)(\1)+",
-                lambda m: f"{m.group(1).strip()}(x{len(m.group(0).split())}) ",
+                lambda m: f"{m.group(1).strip()}({len(m.group(0).split())} of them) ",
                 quoted_text,
             )
 
@@ -91,9 +90,12 @@ class RegexGenerator:
         # Apply the replace_and_format only to the text inside quotes
         modified_str = re.sub(
             r'"([^"]+)"|\'([^\']+)\'',
-            lambda m: f"{replace_and_format(m.group(0)).strip()}",
+            lambda m: f"{m.group(0)}\ ({replace_and_format(m.group(0))})",
             nat_lang_str,
         )
+
+        # Remove the quotes
+        modified_str = re.sub(r'"|\'', "", modified_str)
 
         return modified_str
 
