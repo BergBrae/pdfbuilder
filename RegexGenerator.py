@@ -98,14 +98,14 @@ class RegexGenerator:
         self.dialog_frame = tk.Frame(self.dialog)
 
         label = tk.Label(
-            self.dialog_frame, text="Describe what you would like to match:"
+            self.dialog_frame, text="Describe What You Would Like To Match:"
         )
         label.pack()
 
         self.text = Text(self.dialog_frame, height=3, width=50)
         self.text.pack(pady=3)
 
-        self.test_label = tk.Label(self.dialog_frame, text="Enter an example:")
+        self.test_label = tk.Label(self.dialog_frame, text="Enter An Example To Test:")
         self.test_label.pack()
         self.test_input = Text(self.dialog_frame, height=1, width=50)
         self.test_input.pack()
