@@ -509,7 +509,8 @@ if __name__ == "__main__":
 
     # Start the executable as a subprocess
     proc = subprocess.Popen(
-        ["Phi-3-mini-4k-instruct.Q4_1.llamafile.exe", "--nobrowser"], shell=True
+        [r"llamafiles\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe", "--nobrowser"],
+        shell=True,
     )
 
     try:
