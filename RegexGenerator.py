@@ -90,7 +90,7 @@ class RegexGenerator:
         # Apply the replace_and_format only to the text inside quotes
         modified_str = re.sub(
             r'"([^"]+)"|\'([^\']+)\'',
-            lambda m: f"{m.group(0)}\ ({replace_and_format(m.group(0))})",
+            lambda m: f"{m.group(0)} ({replace_and_format(m.group(0))})",
             nat_lang_str,
         )
 
@@ -188,14 +188,20 @@ class RegexGenerator:
             self.output.insert(tk.END, self.output_str)
             self.root.update()  # Force update the GUI
 
-            attempts += 1
-            self.progress_label.config(text=f"Try {attempts} of {max_tries}")
+            if test_string:
+                attempts += 1
+                self.progress_label.config(text=f"Try {attempts} of {max_tries}")
 
-            if self.test_regex():
+                if self.test_regex():
+                    break
+
+                failed_attempts.append(self.output_str)
+                self.root.update()  # Force update the GUI
+            else:
+                self.progress_label.config(text="")
+                self.test_result.config(text="")
+                self.root.update()
                 break
-
-            failed_attempts.append(self.output_str)
-            self.root.update()  # Force update the GUI
 
     def accept(self):
         if self.insert_into:
