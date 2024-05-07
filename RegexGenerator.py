@@ -3,6 +3,7 @@ import tkinter as tk
 import ollama
 import re
 import webbrowser
+from typing import Callable
 
 
 def open_link(url):
@@ -99,7 +100,8 @@ class RegexGenerator:
 
         return modified_str
 
-    def open_dialog(self, insert_into=None, event=None):
+    def open_dialog(self, insert_into: Callable = None, event=None):
+        # insert_into is a function that will insert the generated regex into the calling function
         self.insert_into = insert_into
 
         if not self.dialog.winfo_exists():
@@ -204,10 +206,8 @@ class RegexGenerator:
                 break
 
     def accept(self):
-        if self.insert_into:
-            self.output_str = self.output.get(1.0, tk.END).strip()
-            self.insert_into.delete(0, tk.END)
-            self.insert_into.insert(tk.END, self.output_str)
+        self.output_str = self.output.get(1.0, tk.END).strip()
+        self.insert_into(self.output_str)
         self.dialog.destroy()
         return self.output_str
 

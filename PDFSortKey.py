@@ -130,11 +130,23 @@ class PDFSortKey:
         )
         self.open_dialog()
 
-    def get_textbox_with_cursor(self):
-        return self.root.focus_get()
+    def get_insert_function(self):
+
+        def insert_into_existing_box(box, regex):
+            box.delete(0, tk.END)
+            box.insert(tk.END, regex)
+
+        box = self.root.focus_get()
+        if isinstance(box, Text):
+            return insert_into_existing_box
+
+        def new_key(regex):
+            self.sort_key.append(PDFClassification(regex=regex))
+
+        return new_key
 
     def generate_regex(self):
-        self.regex_generator.open_dialog(insert_into=self.get_textbox_with_cursor())
+        self.regex_generator.open_dialog(insert_into=self.get_insert_function())
         self.regex_generator.dialog.wait_window()
         self.open_dialog()
 
