@@ -48,40 +48,54 @@ class RegexGenerator:
             return ""
 
     def convert_description_to_words(self, nat_lang_str: str):
-        # Using raw strings to correctly handle backslashes and other special characters
-        to_replace = [
-            (r"[a-zA-Z]", " letter "),  # replace letters with the word "letter"
-            (r"\(", " open parenthesis "),
-            (r"\)", " close parenthesis "),
-            (r"-", " dash "),
-            (r"_", " underscore "),
-            (r"\+", " plus "),
-            (r"\*", " asterisk "),
-            (r"\.", " period "),
-            (r"\\", " backslash "),
-            (r"`", " backtick "),
-            (r";", " semicolon "),
-            (r":", " colon "),
-            (r"@", " at sign "),
-            (r"#", " hash "),
-            (r"%", " percent "),
-            (r"\&", " ampersand "),
-            (r"=", " equals "),
-            (r"/", " forward slash "),
-            (r"~", " tilde "),
-            (r"\n", " newline "),
-            (r"\r", " return "),
-            (r"\d", " digit "),  # replace digits with the word "digit"
-        ]
-        # Replace all the characters in the string with the corresponding words (only in quotes)
-        for org_quote in re.findall(r'"([^"]+)"|\'([^\']+)\'', nat_lang_str):
-            org_quote = org_quote[0] if org_quote[0] else org_quote[1]
-            quote = org_quote
-            for char, word in to_replace:
-                quote = re.sub(char, word, quote)
-            nat_lang_str = nat_lang_str.replace(org_quote, quote.strip())
+        def replace_and_format(quoted_text):
+            # Define patterns and replacements
+            replacements = [
+                (r"[a-zA-Z]", "letter"),
+                (r"\d", "digit"),
+                (r"\(", "open parenthesis"),
+                (r"\)", "close parenthesis"),
+                (r"-", "dash"),
+                (r"_", "underscore"),
+                (r"\+", "plus"),
+                (r"\*", "asterisk"),
+                (r"\.", "period"),
+                (r"\\", "backslash"),
+                (r"`", "backtick"),
+                (r";", "semicolon"),
+                (r":", "colon"),
+                (r"@", "at sign"),
+                (r"#", "hash"),
+                (r"%", "percent"),
+                (r"\&", "ampersand"),
+                (r"=", "equals"),
+                (r"/", "forward slash"),
+                (r"~", "tilde"),
+                (r"\n", "newline"),
+                (r"\r", "return"),
+            ]
 
-        return nat_lang_str
+            # Apply the replacements
+            for pattern, replacement in replacements:
+                quoted_text = re.sub(pattern, replacement + " ", quoted_text)
+
+            # Condense repeated words with counts
+            quoted_text = re.sub(
+                r"(\b\w+\s)(\1)+",
+                lambda m: f"{m.group(1).strip()}(x{len(m.group(0).split())}) ",
+                quoted_text,
+            )
+
+            return quoted_text.strip()
+
+        # Apply the replace_and_format only to the text inside quotes
+        modified_str = re.sub(
+            r'"([^"]+)"|\'([^\']+)\'',
+            lambda m: f"{replace_and_format(m.group(0)).strip()}",
+            nat_lang_str,
+        )
+
+        return modified_str
 
     def open_dialog(self, insert_into=None, event=None):
         self.insert_into = insert_into
