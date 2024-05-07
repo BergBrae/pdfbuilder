@@ -4,13 +4,32 @@ import ollama
 import re
 import webbrowser
 from typing import Callable
+from openai import OpenAI
+
+
+LLAMAFILE_PATH = r".\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe"
+
+client = OpenAI(
+    base_url="http://127.0.0.1:8080/v1",  # "http://<Your api-server IP>:port"
+    api_key="sk-no-key-required",
+)
 
 
 def open_link(url):
     webbrowser.open_new(url)
 
 
-modelname = "phi3:mini"
+def call_model(prompt):
+    return client.chat.completions.create(
+        model="NULL",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
+        stop=["\n"],
+    )
 
 
 class RegexGenerator:
@@ -22,30 +41,22 @@ class RegexGenerator:
 
     def nl_to_regex(self, nat_lang_str: str, failed_attempts=None, event=None):
         nat_lang_str = self.convert_description_to_words(nat_lang_str)
-        try:
-            if failed_attempts:
-                failed_attempts = set(failed_attempts)
-                nat_lang_str += (
-                    "\nThe following are previous attempts that failed. Do not generate these patterns.\n"
-                    + "\n".join(failed_attempts)
-                )
-            message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria. Note: Make sure to escape charcters that need to be matched. \nDescription: {nat_lang_str}\nExpected output: "
-            response = ollama.generate(
-                model=modelname, prompt=message, options={"stop": ["\n", "<|end|>"]}
+        if failed_attempts:
+            failed_attempts = set(failed_attempts)
+            nat_lang_str += (
+                "\nThe following are previous attempts that failed. Do not generate these patterns.\n"
+                + "\n".join(failed_attempts)
             )
-            response = response["response"]
-            print(response)
-            regex_expression = re.sub(
-                "[`r\"'\n\r\\s]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
-                r"\1",
-                response,
-            )
-            return regex_expression
-        except Exception as e:
-            messagebox.showerror(
-                "Error: Ollama is not running", f"Please install/run Ollama\n\n{e}"
-            )
-            return ""
+        message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria. Note: Make sure to escape charcters that need to be matched. \nDescription: {nat_lang_str}\nExpected output: "
+        response = call_model(message)
+        response = response.choices[0].message.content
+        print(response)
+        regex_expression = re.sub(
+            "[`r\"'\n\r\\s]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
+            r"\1",
+            response,
+        )
+        return regex_expression
 
     def convert_description_to_words(self, nat_lang_str: str):
         def replace_and_format(quoted_text):
