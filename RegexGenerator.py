@@ -20,6 +20,7 @@ class RegexGenerator:
         self.dialog.destroy()
 
     def nl_to_regex(self, nat_lang_str: str, failed_attempts=None, event=None):
+        nat_lang_str = self.convert_description_to_words(nat_lang_str)
         try:
             if failed_attempts:
                 failed_attempts = set(failed_attempts)
@@ -45,6 +46,42 @@ class RegexGenerator:
                 "Error: Ollama is not running", f"Please install/run Ollama\n\n{e}"
             )
             return ""
+
+    def convert_description_to_words(self, nat_lang_str: str):
+        # Using raw strings to correctly handle backslashes and other special characters
+        to_replace = [
+            (r"[a-zA-Z]", " letter "),  # replace letters with the word "letter"
+            (r"\(", " open parenthesis "),
+            (r"\)", " close parenthesis "),
+            (r"-", " dash "),
+            (r"_", " underscore "),
+            (r"\+", " plus "),
+            (r"\*", " asterisk "),
+            (r"\.", " period "),
+            (r"\\", " backslash "),
+            (r"`", " backtick "),
+            (r";", " semicolon "),
+            (r":", " colon "),
+            (r"@", " at sign "),
+            (r"#", " hash "),
+            (r"%", " percent "),
+            (r"\&", " ampersand "),
+            (r"=", " equals "),
+            (r"/", " forward slash "),
+            (r"~", " tilde "),
+            (r"\n", " newline "),
+            (r"\r", " return "),
+            (r"\d", " digit "),  # replace digits with the word "digit"
+        ]
+        # Replace all the characters in the string with the corresponding words (only in quotes)
+        for org_quote in re.findall(r'"([^"]+)"|\'([^\']+)\'', nat_lang_str):
+            org_quote = org_quote[0] if org_quote[0] else org_quote[1]
+            quote = org_quote
+            for char, word in to_replace:
+                quote = re.sub(char, word, quote)
+            nat_lang_str = nat_lang_str.replace(org_quote, quote.strip())
+
+        return nat_lang_str
 
     def open_dialog(self, insert_into=None, event=None):
         self.insert_into = insert_into
@@ -83,8 +120,11 @@ class RegexGenerator:
         self.progress_label = tk.Label(self.dialog_frame, text="")
         self.progress_label.pack()
 
+        self.test_result = tk.Label(self.dialog_frame, text="")
+        self.test_result.pack()
+
         self.output_label = tk.Label(self.dialog_frame, text="Generated Text Pattern:")
-        self.output_label.pack()
+        self.output_label.pack(pady=(30, 5))
         self.output = Text(self.dialog_frame, height=1, width=50)
         self.output.pack()
 
@@ -92,9 +132,6 @@ class RegexGenerator:
             self.dialog_frame, text="Accept", command=self.accept
         )
         self.accept_button.pack(pady=5)
-
-        self.test_result = tk.Label(self.dialog_frame, text="")
-        self.test_result.pack(side=tk.BOTTOM)
 
         self.dialog_frame.pack()
 
