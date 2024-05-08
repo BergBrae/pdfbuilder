@@ -17,7 +17,7 @@ from PDFSortKey import PDFSortKey
 from RegexGenerator import find_and_kill_process_by_port
 
 
-def _exit(event=None):
+def _exit(root, event=None):
     root.quit()
 
 
@@ -46,7 +46,7 @@ class PDFBuilder:
         self.root.bind("<Control-d>", self.add_directory)
         self.root.bind("<Control-Shift-S>", self.auto_sort)
         self.root.bind("<BackSpace>", self.remove_selected)
-        self.root.bind("<Control-q>", _exit)
+        self.root.bind("<Control-q>", lambda x: _exit(self.root, x))
         self.root.bind("<Control-c>", self.clear_files)
         self.tree.bind("<Return>", self.edit_bookmark)
         self.tree.bind("<Button-3>", self.show_file_text)
