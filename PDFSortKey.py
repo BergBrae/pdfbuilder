@@ -130,6 +130,14 @@ class PDFSortKey:
         )
         self.open_dialog()
 
+    def move_up(self, i):
+        num_keys = len(self.sort_key)
+        self.sort_key[i], self.sort_key[(i - 1) % num_keys] = (
+            self.sort_key[(i - 1) % num_keys],
+            self.sort_key[i],
+        )
+        self.open_dialog()
+
     def get_insert_function(self):
 
         def insert_into_existing_box(box, regex):
