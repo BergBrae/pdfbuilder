@@ -510,6 +510,7 @@ if __name__ == "__main__":
 
     # Start the executable as a subprocess
     port = "3456"
+    find_and_kill_process_by_port(port)
     proc = subprocess.Popen(
         [
             r"llamafiles\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe",
