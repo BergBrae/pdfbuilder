@@ -40,13 +40,24 @@ class RegexGenerator:
         self.dialog.destroy()
 
     def nl_to_regex(self, nat_lang_str: str, failed_attempts=None, event=None):
-        nat_lang_str = self.convert_description_to_words(nat_lang_str)
-        if failed_attempts:
-            failed_attempts = set(failed_attempts)
-            nat_lang_str += (
-                "\nThe following are previous attempts that failed. Do not generate these patterns.\n"
-                + "\n".join(failed_attempts)
+        try:
+            nat_lang_str = self.convert_description_to_words(nat_lang_str)
+            if failed_attempts:
+                failed_attempts = set(failed_attempts)
+                nat_lang_str += (
+                    "\nThe following are previous attempts that failed. Do not generate these patterns.\n"
+                    + "\n".join(failed_attempts)
+                )
+            message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria. Note: Make sure to escape charcters that need to be matched. \nDescription: {nat_lang_str}\nExpected output: "
+            response = call_model(message)
+            response = response.choices[0].message.content
+            print(f"\n{response}\n")
+            regex_expression = re.sub(
+                "[`r\"'\n\r\\s]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
+                r"\1",
+                response,
             )
+<<<<<<< HEAD
         message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria. Note: Make sure to escape charcters that need to be matched. \nDescription: {nat_lang_str}\nExpected output: "
         response = call_model(message)
         response = response.choices[0].message.content
@@ -57,6 +68,12 @@ class RegexGenerator:
             response,
         )
         return regex_expression
+=======
+            return regex_expression
+        except Exception as e:
+            # show message box with error
+            messagebox.showerror("Error", f"An error occurred: {e}")
+>>>>>>> 7855ae1 (Show error on regex generation failure)
 
     def convert_description_to_words(self, nat_lang_str: str):
         def replace_and_format(quoted_text):
