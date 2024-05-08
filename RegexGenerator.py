@@ -31,6 +31,7 @@ def call_model(prompt):
             },
         ],
         stop=["\n"],
+        frequency_penalty=2,
     )
 
 
@@ -45,7 +46,7 @@ class RegexGenerator:
         try:
             if random.random() < 0.5:  # 50% chance to convert to words
                 nat_lang_str = self.convert_description_to_words(nat_lang_str)
-            if failed_attempts:
+            if failed_attempts and random.random() < 0.5:
                 failed_attempts = set(failed_attempts)
                 nat_lang_str += (
                     "\nThe following are previous attempts that failed. Do not generate these patterns.\n"
