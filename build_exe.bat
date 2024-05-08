@@ -8,4 +8,4 @@ copy "dist\PDFBuilder.exe" "G:\data\PyPDFBuilder\PDFBuilder.exe"
 REM copy code to network drive
 copy "." "G:\data\PyPDFBuilder\code" /Y
 
-copy "llamafiles\*.exe" "G:\data\PyPDFBuilder\llamafiles" /Y
+REM copy "llamafiles\*.exe" "G:\data\PyPDFBuilder\llamafiles" /Y
