@@ -6,6 +6,7 @@ import webbrowser
 from typing import Callable
 from openai import OpenAI
 import subprocess
+import random
 
 
 LLAMAFILE_PATH = r".\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe"
@@ -42,7 +43,8 @@ class RegexGenerator:
 
     def nl_to_regex(self, nat_lang_str: str, failed_attempts=None, event=None):
         try:
-            nat_lang_str = self.convert_description_to_words(nat_lang_str)
+            if random.random() < 0.5:  # 50% chance to convert to words
+                nat_lang_str = self.convert_description_to_words(nat_lang_str)
             if failed_attempts:
                 failed_attempts = set(failed_attempts)
                 nat_lang_str += (
