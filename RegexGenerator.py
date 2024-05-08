@@ -5,12 +5,13 @@ import re
 import webbrowser
 from typing import Callable
 from openai import OpenAI
+import subprocess
 
 
 LLAMAFILE_PATH = r".\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe"
 
 client = OpenAI(
-    base_url="http://127.0.0.1:8080/v1",  # "http://<Your api-server IP>:port"
+    base_url="http://127.0.0.1:3456/v1",  # "http://<Your api-server IP>:port"
     api_key="sk-no-key-required",
 )
 
@@ -238,6 +239,24 @@ class RegexGenerator:
         self.insert_into(self.output_str)
         self.dialog.destroy()
         return self.output_str
+
+
+def find_and_kill_process_by_port(port):
+    try:
+        # Use netstat and findstr to find the PID of the process using the port
+        netstat_output = subprocess.check_output(["netstat", "-a", "-n", "-o"]).decode(
+            "utf-8"
+        )
+        lines = netstat_output.splitlines()
+        for line in lines:
+            if f"127.0.0.1:{port}" in line:
+                parts = line.split()
+                pid = parts[-1]
+                subprocess.call(["taskkill", "/F", "/PID", pid])
+                print(f"Killed process with PID {pid} using port {port}")
+                return
+    except Exception as e:
+        print(f"Error while killing existing processes: {e}")
 
 
 if __name__ == "__main__":

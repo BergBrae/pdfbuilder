@@ -14,6 +14,7 @@ from PDFFile import PDFFile
 from PDFCollection import PDFCollection
 from open_file import open_file
 from PDFSortKey import PDFSortKey
+from RegexGenerator import find_and_kill_process_by_port
 
 
 def _exit(event=None):
@@ -508,8 +509,14 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     # Start the executable as a subprocess
+    port = "3456"
     proc = subprocess.Popen(
-        [r"llamafiles\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe", "--nobrowser"],
+        [
+            r"llamafiles\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe",
+            "--nobrowser",
+            "--port",
+            port,
+        ],
         shell=True,
     )
 
@@ -521,5 +528,9 @@ if __name__ == "__main__":
         print(f"An error occurred: {e}")
     finally:
         # Ensure the subprocess is terminated when the Python script ends
-        proc.terminate()
+        proc.kill()
+        proc.wait()
+
+        find_and_kill_process_by_port(port)
+
         print("Subprocess terminated.")
