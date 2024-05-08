@@ -58,23 +58,10 @@ class RegexGenerator:
                 r"\1",
                 response,
             )
-<<<<<<< HEAD
-        message = f"Please convert the following natural language description into a regular expression. Your response should consist solely of the regex pattern itself, without enclosing it in code blocks, providing any additional explanations, or including any supplementary text. The goal is to receive a clean, direct regex pattern that corresponds exactly to the described criteria. Note: Make sure to escape charcters that need to be matched. \nDescription: {nat_lang_str}\nExpected output: "
-        response = call_model(message)
-        response = response.choices[0].message.content
-        print(response)
-        regex_expression = re.sub(
-            "[`r\"'\n\r\\s]*(?:\\^*|\\^*(?:regex|python))?\\s*([^`$]+)[\\s`$\"']*",
-            r"\1",
-            response,
-        )
-        return regex_expression
-=======
             return regex_expression
         except Exception as e:
             # show message box with error
             messagebox.showerror("Error", f"An error occurred: {e}")
->>>>>>> 7855ae1 (Show error on regex generation failure)
 
     def convert_description_to_words(self, nat_lang_str: str):
         def replace_and_format(quoted_text):
