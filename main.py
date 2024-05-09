@@ -16,7 +16,19 @@ if __name__ == "__main__":
     import sys
     import os
 
-    llamafile_path = r"llamafiles\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe"
+    def resource_path(relative_path):
+        """Get absolute path to resource, works for dev and for PyInstaller"""
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = sys._MEIPASS
+        except AttributeError:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
+
+    llamafile_path = resource_path(
+        r"llamafiles\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe"
+    )
     llamafile_exists = os.path.exists(llamafile_path)
 
     def signal_handler(sig, frame):

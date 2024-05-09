@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, Toplevel
 import os
+import sys
 import json
 from PyPDF2 import PdfMerger, PdfReader
 import pickle as pkl
@@ -22,13 +23,25 @@ def _exit(root, event=None):
     root.quit()
 
 
+def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 class PDFBuilder:
 
-    def __init__(self, root):
+    def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("PDF Builder")
         self.root.geometry("1000x600")
-        # self.root.iconbitmap("pdficon.ico")
+
+        self.root.iconbitmap(resource_path("pdficon.ico"))
 
         self.table = PDFTreeView(
             self.root,
