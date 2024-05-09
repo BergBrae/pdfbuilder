@@ -34,7 +34,7 @@ class PDFTreeView:
         self.tree.bind("<Button-3>", self.show_file_text)
         self.tree.bind(
             "<Control-a>",
-            lambda: self.tree.selection_set(self.tree.get_children()),
+            lambda e: self.tree.selection_set(self.tree.get_children()),
         )
         self.tree.bind("<Control-Up>", self.move_file_up)
         self.tree.bind("<Control-Down>", self.move_file_down)

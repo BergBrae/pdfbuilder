@@ -41,7 +41,7 @@ class PDFBuilder:
         self.create_bottom_buttons()
         self.create_status_bar()
         self.root.bind("<Control-b>", self.build_pdf)
-        self.root.bind("<Control-s>", self.table.sorter.open_dialog)
+        self.root.bind("<Control-s>", lambda e: self.table.sorter.open_dialog())
         self.root.bind("<Control-d>", self.table.add_directory)
         self.root.bind("<Control-Shift-S>", self.table.auto_sort)
         self.root.bind("<BackSpace>", self.table.remove_selected)
@@ -64,7 +64,11 @@ class PDFBuilder:
             ("Save", self.save_state, default_spacing),
             ("Add Files", self.table.add_files, large_spacing),
             ("Add Directory", self.table.add_directory, default_spacing),
-            ("Sort Key", self.table.sorter.open_dialog, large_spacing),
+            (
+                "Sort Key",
+                lambda: self.table.sorter.open_dialog(),
+                large_spacing,
+            ),  # Need lambda to avoid calling an out of date sorter
             (
                 "Remove Selected Bookmarks",
                 self.table.remove_selected_bookmarks,
@@ -160,9 +164,11 @@ class PDFBuilder:
                 self.table.pdfs = PDFCollection.from_dict(pdf_collection)
             if sort_key is not None:
                 self.table.sorter = PDFSortKey.from_dict(sort_key, self.root)
+                self.table.sorter.open_dialog()
 
             self.table.update_tree()
             messagebox.showinfo("PDF Builder", "State has been loaded successfully.")
+            return
 
         # Create a new window
         window = Toplevel(self.root)
@@ -184,6 +190,7 @@ class PDFBuilder:
                 self.table.pdfs = PDFCollection.from_dict(pdf_collection)
             if load_sort_key.get() and sort_key:
                 self.table.sorter = PDFSortKey.from_dict(sort_key, self.root)
+                self.table.sorter.open_dialog()
 
             self.table.update_tree()
             messagebox.showinfo("PDF Builder", "State has been loaded successfully.")
