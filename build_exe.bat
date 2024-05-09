@@ -1,6 +1,6 @@
 @echo off
 REM Run pyinstaller
-pyinstaller --noconsole --onefile --icon pdficon.ico PDFBuilder.py
+pyinstaller --noconsole --onefile --icon pdficon.ico -n PDFBuilder main.py
 
 REM copy to network drive
 copy "dist\PDFBuilder.exe" "G:\data\PyPDFBuilder\PDFBuilder.exe"

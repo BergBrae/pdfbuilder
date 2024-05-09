@@ -28,7 +28,7 @@ class PDFBuilder:
         self.root = root
         self.root.title("PDF Builder")
         self.root.geometry("1000x600")
-        self.root.iconbitmap("pdficon.ico")
+        # self.root.iconbitmap("pdficon.ico")
 
         self.table = PDFTreeView(
             self.root,

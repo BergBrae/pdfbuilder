@@ -14,6 +14,10 @@ if __name__ == "__main__":
     import subprocess
     import signal
     import sys
+    import os
+
+    llamafile_path = r"llamafiles\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe"
+    llamafile_exists = os.path.exists(llamafile_path)
 
     def signal_handler(sig, frame):
         print("Ctrl-C pressed, stopping the subprocess...")
@@ -24,17 +28,18 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     # Start the executable as a subprocess
-    port = "3456"
-    find_and_kill_process_by_port(port)
-    proc = subprocess.Popen(
-        [
-            r"llamafiles\Phi-3-mini-4k-instruct.Q4_1.llamafile.exe",
-            "--nobrowser",
-            "--port",
-            port,
-        ],
-        shell=True,
-    )
+    if llamafile_exists:
+        port = "3456"
+        find_and_kill_process_by_port(port)
+        proc = subprocess.Popen(
+            [
+                llamafile_path,
+                "--nobrowser",
+                "--port",
+                port,
+            ],
+            shell=True,
+        )
 
     try:
         # Keep the main program running; you can do your other tasks in this block
@@ -44,9 +49,10 @@ if __name__ == "__main__":
         print(f"An error occurred: {e}")
     finally:
         # Ensure the subprocess is terminated when the Python script ends
-        proc.kill()
-        proc.wait()
+        if llamafile_exists:
+            proc.kill()
+            proc.wait()
 
-        find_and_kill_process_by_port(port)
+            find_and_kill_process_by_port(port)
 
-        print("Subprocess terminated.")
+            print("Subprocess terminated.")
