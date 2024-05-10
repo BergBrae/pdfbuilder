@@ -36,7 +36,7 @@ def resource_path(relative_path):
 
 class PDFBuilder:
 
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: tk.Tk, llamafile_exists: bool):
         self.root = root
         self.root.title("PDF Builder")
         self.root.geometry("1000x600")
@@ -46,6 +46,7 @@ class PDFBuilder:
         self.table = PDFTreeView(
             self.root,
             update_num_files=lambda x: self.status_bar.config(text=f"Total Files: {x}"),
+            llamafile_exists=llamafile_exists,
         )
 
         self.create_toolbar()
@@ -202,7 +203,9 @@ class PDFBuilder:
             if load_files.get() and pdf_collection:
                 self.table.pdfs = PDFCollection.from_dict(pdf_collection)
             if load_sort_key.get() and sort_key:
-                self.table.sorter = PDFSortKey.from_dict(sort_key, self.root)
+                self.table.sorter = PDFSortKey.from_dict(
+                    sort_key, self.root, self.table.sorter.llamafile_exists
+                )
                 self.table.sorter.open_dialog()
 
             self.table.update_tree()

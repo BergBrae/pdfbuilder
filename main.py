@@ -4,9 +4,9 @@ from RegexGenerator import find_and_kill_process_by_port
 from PDFBuilder import PDFBuilder
 
 
-def main():
+def main(llamafile_exists):
     root = tk.Tk()
-    app = PDFBuilder(root)
+    app = PDFBuilder(root, llamafile_exists)
     root.mainloop()
 
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     try:
         # Keep the main program running; you can do your other tasks in this block
         print("Running, press Ctrl-C to stop.")
-        main()
+        main(llamafile_exists)
     except Exception as e:
         print(f"An error occurred: {e}")
     finally:

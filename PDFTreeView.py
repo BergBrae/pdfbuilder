@@ -13,13 +13,13 @@ from PDFSortKey import PDFSortKey
 
 
 class PDFTreeView:
-    def __init__(self, root, update_num_files: callable):
+    def __init__(self, root, update_num_files: callable, llamafile_exists: bool):
         self.style = ttk.Style()
         self.style.theme_use("flatly")
 
         self.root = root
         self.pdfs = PDFCollection()
-        self.sorter = PDFSortKey(self.root)
+        self.sorter = PDFSortKey(self.root, llamafile_exists=llamafile_exists)
         self.tree_items = set()
         self.alerted_failed_files = set()
         self.update_num_files = update_num_files

@@ -5,10 +5,8 @@ __pycache__/
 sort_key.txt
 dist/
 build/
-PDFBuilder.spec
 build_exe.bat
 todo.txt
-main.spec
 repo_to_context.py
 llama.log
 *.exe

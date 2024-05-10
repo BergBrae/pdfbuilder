@@ -6,21 +6,18 @@ import webbrowser
 from PDFClassification import PDFClassification
 
 
-USE_OLLAMA = True
-
-if USE_OLLAMA:
-    from RegexGenerator import RegexGenerator
-
-
 class PDFSortKey:
-    def __init__(self, root):
+    def __init__(self, root, llamafile_exists: bool):
         self.root = root
         self.dialog = Toplevel(self.root)
         self.dialog.title("Sort Key")
         self.dialog.destroy()
+        self.llamafile_exists = llamafile_exists
 
         self.sort_key: list[PDFClassification] = [PDFClassification(regex="")]
-        if USE_OLLAMA:
+        if self.llamafile_exists:
+            from RegexGenerator import RegexGenerator
+
             self.regex_generator = RegexGenerator(self.root)
 
     def __iter__(self):
@@ -74,8 +71,9 @@ class PDFSortKey:
         self.add_key_button = Button(
             buttons_frame, text="Add Key", command=self.add_key
         )
-        self.add_key_button.pack(side=tk.LEFT)
-        if USE_OLLAMA:
+        self.add_key_button.pack(side=tk.LEFT, padx=5)
+
+        if self.llamafile_exists:
             self.generate_regex_button = Button(
                 buttons_frame, text="Generate Text Pattern", command=self.generate_regex
             )
@@ -84,7 +82,7 @@ class PDFSortKey:
         self.close_button = Button(
             buttons_frame, text="Close", command=self.dialog.destroy
         )
-        self.close_button.pack(side=tk.RIGHT)
+        self.close_button.pack(side=tk.RIGHT, padx=5)
 
         buttons_frame.pack(padx=5)
 
@@ -171,8 +169,8 @@ class PDFSortKey:
         return [key.to_dict() for key in self.sort_key]
 
     @classmethod
-    def from_dict(cls, data: list[dict], root):
-        sort_key = cls(root)
+    def from_dict(cls, data: list[dict], root, llamafile_exists: bool):
+        sort_key = cls(root, llamafile_exists=llamafile_exists)
         sort_key.sort_key = [PDFClassification.from_dict(d) for d in data]
         return sort_key
 
