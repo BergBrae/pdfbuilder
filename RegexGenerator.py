@@ -31,7 +31,6 @@ def call_model(prompt):
             },
         ],
         stop=["\n"],
-        frequency_penalty=2,
     )
 
 
