@@ -3,10 +3,9 @@
 state.json
 __pycache__/
 sort_key.txt
-dist/
 build/
-build_exe.bat
 todo.txt
 repo_to_context.py
 llama.log
-*.exe
+dist/PDFBuilder(AI).exe
+llamafiles/
