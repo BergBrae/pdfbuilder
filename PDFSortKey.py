@@ -2,6 +2,7 @@ from tkinter import simpledialog, Text, Button, Toplevel
 import tkinter as tk
 import re
 import webbrowser
+import tkinter.ttk as ttk
 
 from PDFClassification import PDFClassification
 
@@ -28,28 +29,46 @@ class PDFSortKey:
     def open_dialog(self, event=None):
         if not self.dialog.winfo_exists():
             self.dialog = Toplevel(self.root)
-            self.dialog.geometry("800x300")
+            self.dialog.geometry("850x200")  # Adjusted for demonstration
             self.dialog.title("Sort Key")
 
         self.dialog.focus_set()
 
-        # clear dialog
+        # Clear dialog
         for widget in self.dialog.winfo_children():
             widget.destroy()
 
-        self.dialog_frame = tk.Frame(self.dialog)
+        # Create a canvas and a scrollbar
+        self.canvas = tk.Canvas(self.dialog)
+        scrollbar = tk.Scrollbar(
+            self.dialog, orient="vertical", command=self.canvas.yview
+        )
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Pack the scrollbar to the right of the dialog and the canvas on the left
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Create a frame inside the canvas to hold the content
+        self.dialog_frame = tk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.dialog_frame, anchor="nw")
+
+        # add a vertical line to the right side of the canvas
+        sperator = ttk.Separator(self.canvas, orient="vertical")
+        sperator.pack(side=tk.RIGHT, fill=tk.Y)
 
         header_text = (
             f"Applies to: {' '*60} Bookmark Title: {' '*19} Text Pattern: {' '*85}"
         )
-
         containers = [tk.Label(self.dialog_frame, text=header_text)]
-        # pack with left justified
-        containers[0].pack()
+        containers[0].pack(fill=tk.X)
+
         for i, key in enumerate(self.sort_key):
             frame = key.to_frame(self.dialog_frame)
             delete_key = Button(
-                frame, text="Delete", command=lambda i=i: self.delete_key(i, frame)
+                frame,
+                text="Delete",
+                command=lambda i=i, frame=frame: self.delete_key(i, frame),
             )
 
             move_up = Button(frame, text="Move Up", command=lambda i=i: self.move_up(i))
@@ -63,31 +82,39 @@ class PDFSortKey:
             delete_key.pack(side=tk.RIGHT, padx=5)
 
             containers.append(frame)
-            containers[-1].pack(pady=5)
-        self.dialog_frame.pack()
+            containers[-1].pack(pady=5, fill=tk.X)
+
+        self.dialog_frame.update_idletasks()  # Update inner frame size
+        self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
         buttons_frame = tk.Frame(self.dialog)
-
         self.add_key_button = Button(
             buttons_frame, text="Add Key", command=self.add_key
         )
-        self.add_key_button.pack(side=tk.LEFT, padx=5)
+        self.add_key_button.pack(side=tk.TOP, pady=5)
 
         if self.llamafile_exists:
             self.generate_regex_button = Button(
-                buttons_frame, text="Generate Text Pattern", command=self.generate_regex
+                buttons_frame,
+                text="Generate\nText Pattern",
+                command=self.generate_regex,
             )
-            self.generate_regex_button.pack(side=tk.LEFT, padx=5)
+            self.generate_regex_button.pack(side=tk.TOP, pady=5)
 
-        self.close_button = Button(
-            buttons_frame, text="Close", command=self.dialog.destroy
-        )
-        self.close_button.pack(side=tk.RIGHT, padx=5)
-
-        buttons_frame.pack(padx=5)
-
-        self.help_button = Button(self.dialog, text="Help", command=self.help_dialog)
+        buttons_frame.pack(padx=5, pady=10, anchor="se")
+        self.help_button = Button(buttons_frame, text="Help", command=self.help_dialog)
         self.help_button.pack(side=tk.BOTTOM, pady=10)
+
+        # Configure canvas to expand the scrollbar dynamically
+        self.dialog_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")),
+        )
+
+        self.dialog_frame.bind_all("<MouseWheel>", self._on_mousewheel)
+
+    def _on_mousewheel(self, event):
+        self.canvas.yview_scroll(-1 * (event.delta // 120), "units")
 
     def help_dialog(self):
         def open_link(event):
