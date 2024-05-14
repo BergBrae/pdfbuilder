@@ -32,7 +32,7 @@ class PDFBuilder:
     def __init__(self, root: tk.Tk, llamafile_exists: bool):
         self.root = root
         self.root.title("PDF Builder")
-        self.root.geometry("1000x600")
+        self.root.geometry("1050x600")
 
         self.root.iconbitmap(resource_path("pdficon.ico"))
 
