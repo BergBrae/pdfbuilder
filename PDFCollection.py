@@ -162,7 +162,24 @@ class PDFCollection:
             packet = BytesIO()
             writer.write(packet)
             packet.seek(0)
-            packet = add_page_number(packet, y_padding=y_padding, font_size=font_size)
+
+            tries = 0
+            max_num_tries = 3
+            while (
+                tries < max_num_tries
+            ):  # for some reason this takes several tries to work sometimes
+                tries += 1
+                try:
+                    packet = add_page_number(
+                        packet, y_padding=y_padding, font_size=font_size
+                    )
+                except:
+                    if tries == max_num_tries:
+                        raise ValueError(
+                            "Something went wrong while adding page numbers. Please try again."
+                        )
+                    print(f"Failed to add page numbers to pages. Retrying...")
+                    continue
             reader = PdfReader(packet)
             writer = PdfWriter()
             current_page = 0
