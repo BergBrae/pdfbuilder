@@ -1,6 +1,5 @@
-from tkinter import simpledialog, Text, Button, Toplevel, messagebox
+from tkinter import Text, Button, Toplevel, messagebox
 import tkinter as tk
-import ollama
 import re
 import webbrowser
 from typing import Callable

@@ -3,19 +3,12 @@ from tkinter import ttk, filedialog, messagebox, Toplevel
 import os
 import sys
 import json
-from PyPDF2 import PdfMerger, PdfReader
-import pickle as pkl
-from copy import deepcopy
-from glob import glob
 import ttkbootstrap as ttk
 import tkinter as tk
 from tkinter import messagebox, filedialog
 
-from PDFFile import PDFFile
 from PDFCollection import PDFCollection
-from open_file import open_file
 from PDFSortKey import PDFSortKey
-from RegexGenerator import find_and_kill_process_by_port
 from PDFTreeView import PDFTreeView
 
 

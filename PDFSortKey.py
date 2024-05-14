@@ -1,4 +1,4 @@
-from tkinter import simpledialog, Text, Button, Toplevel
+from tkinter import Text, Button, Toplevel
 import tkinter as tk
 import re
 import webbrowser

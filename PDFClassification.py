@@ -1,4 +1,3 @@
-from tkinter import simpledialog, Text, Button, Toplevel
 import tkinter as tk
 import re
 

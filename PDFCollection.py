@@ -1,14 +1,9 @@
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, Toplevel
-import os
-import json
 from PyPDF2 import PdfWriter, PdfReader
 from io import BytesIO
 
 from PDFFile import PDFFile
 from add_page_numbers import add_page_number
 from open_file import open_file
-from PDFClassification import PDFClassification
 from PDFSortKey import PDFSortKey
 
 
