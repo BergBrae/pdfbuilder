@@ -3,7 +3,7 @@ import tkinter as tk
 import re
 import webbrowser
 from typing import Callable
-from openai import OpenAI
+from openai import OpenAI # for calling llamafile
 import subprocess
 import random
 

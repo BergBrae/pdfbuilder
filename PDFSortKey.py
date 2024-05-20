@@ -125,10 +125,10 @@ class PDFSortKey:
         root.title("Help")
 
         # Create a text widget to display information
-        text_info = f"""A regular expression (regex) is a sequence of characters that define a search pattern.
+        text_info = r"""A regular expression (regex) is a sequence of characters that define a search pattern.
     In its simplest form, a regex can be used to match a single character or word.
     For example, the regex 'merit' will simply find the word 'merit' in text.
-    However, regexes can be much more complex and powerful. For example, the regex {r'\w\d{5}\.\d{2}\(\d{2}\)'} will match any of Merit's sample IDs like 'S17535.01(01)'.
+    However, regexes can be much more complex and powerful. For example, the regex \w\d{5}\.\d{2}\(\d{2}\) will match any of Merit's sample IDs like 'S17535.01(01)'.
     For help with more complex regexes, you can use the 'Generate Text Pattern' button to create a regex that matches the text you want. Please test your regexes before using them.
     The matching text can be used in the bookmark name. Use "_" to insert the matched text into the bookmark name.
     For more information on regexes, see the link below."""

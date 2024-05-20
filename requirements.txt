@@ -1,5 +1,5 @@
 PyPDF2
 tk
 reportlab
+openai # for calling llamafile, not openai
 ttkbootstrap
-pycryptodome
